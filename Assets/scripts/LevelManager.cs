@@ -7,10 +7,15 @@ public class LevelManager : MonoBehaviour
     [SerializeField]
     private GameObject street;
     [SerializeField]
-    private float streetSpeed = 10;
+    private float streetSpeed = 9;
+    [SerializeField]
+    private short maxStreets = 3;
 
-    private void Start()
+    public GameObject[] streets { private get; set; }
+
+    private void Awaken()
     {
+        streets = new GameObject[maxStreets];
         streetSpeed *= -Time.deltaTime/10;
     }
 
