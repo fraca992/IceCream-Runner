@@ -440,9 +440,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17a7172e41442bd45976623d9bc75ba4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  street: {fileID: 1334452785}
   streetSpeed: 9
   maxStreets: 3
+  streetPrefab: {fileID: 8408529958207095736, guid: 446726b77f06b9644bf730e656be69be, type: 3}
 --- !u!4 &1077238189
 Transform:
   m_ObjectHideFlags: 0
@@ -457,11 +457,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1334452785 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8408529958207095736, guid: 446726b77f06b9644bf730e656be69be, type: 3}
-  m_PrefabInstance: {fileID: 8408529957975240913}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8408529957975240913
 PrefabInstance:
   m_ObjectHideFlags: 0
