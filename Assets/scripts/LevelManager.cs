@@ -15,11 +15,8 @@ public class LevelManager : MonoBehaviour
     private Renderer streetRenderer;
     private float streetLength;
 
-
     private void Awake()
     {
-        streetSpeed *= -Time.deltaTime/10;
-
         streets = new GameObject[maxStreets];
         streets[0] = GameObject.Find("Street");
 
@@ -41,7 +38,7 @@ public class LevelManager : MonoBehaviour
 
         foreach (GameObject street in streets)
         {
-            street.transform.Translate(0, 0, streetSpeed);
+            street.transform.Translate(0, 0, - streetSpeed * Time.deltaTime);
         }
     }
 }
