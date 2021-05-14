@@ -10,6 +10,8 @@ public class LevelManager : MonoBehaviour
     private short maxStreets = 3;
     [SerializeField]
     private GameObject streetPrefab;
+    [SerializeField]
+    private GameObject player;
 
     private GameObject[] streets;
     private Renderer streetRenderer;
@@ -26,18 +28,36 @@ public class LevelManager : MonoBehaviour
 
     void Update()
     {
-        // TODO: considerare nell'instantiate che le strade si muovono, e quindi il punto di spawn è variabile
+        Vector3 nextStreetPosition = new Vector3();
+        if (streets[streets.Length-1] != null)
+        {
+            nextStreetPosition.z = streets[streets.Length-1].transform.position.z + streetLength;
+        }
+
         for (int i = 0; i < streets.Length; i++)
         {
-            if (streets[i] == null)
+            if (streets[i] == null) // TODO: controlla se c'è un modo più compatto di scrivere questo con il punto interrogativo
             {
-                streets[i] = Instantiate(streetPrefab, new Vector3(0, 0, (i * streetLength)), Quaternion.identity);
+                streets[i] = Instantiate(streetPrefab, nextStreetPosition + new Vector3(0, 0, i*streetLength), Quaternion.identity);
             }
         }
 
+        // destroy old street segments //TODO: lascia una strada come "buffer" prima di cancellarla
+        for (int i = 0; i < streets.Length; i++)
+        {
+            if (player.transform.position.z > streets[i].transform.position.z + streetLength)
+            {
+                Destroy(streets[i]);
+            }
+        }
+
+        // move street segments
         foreach (GameObject street in streets)
         {
-            street.transform.Translate(0, 0, -streetSpeed * Time.deltaTime);
+            if (street != null)
+            {
+                street.transform.Translate(0, 0, -streetSpeed * Time.deltaTime);
+            }
         }
     }
 }
