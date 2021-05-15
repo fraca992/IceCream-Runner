@@ -7,7 +7,7 @@ public class LevelManager : MonoBehaviour
     [SerializeField]
     private float streetSpeed = 9;
     [SerializeField]
-    private short maxStreets = 3;
+    private int maxStreets = 3;
     [SerializeField]
     private GameObject streetPrefab;
     [SerializeField]
@@ -16,6 +16,8 @@ public class LevelManager : MonoBehaviour
     private GameObject[] streets;
     private Renderer streetRenderer;
     private float streetLength;
+    private int streetIndex = 0;
+    Vector3 nextStreetPosition = new Vector3(0, 0, 0);
 
     private void Awake()
     {
@@ -28,24 +30,21 @@ public class LevelManager : MonoBehaviour
 
     void Update()
     {
-        Vector3 nextStreetPosition = new Vector3();
-        if (streets[streets.Length-1] != null)
-        {
-            nextStreetPosition.z = streets[streets.Length-1].transform.position.z + streetLength;
-        }
-
+        // instantiate new street segments
         for (int i = 0; i < streets.Length; i++)
         {
-            if (streets[i] == null) // TODO: controlla se c'è un modo più compatto di scrivere questo con il punto interrogativo
+            if (streets[i] == null)
             {
-                streets[i] = Instantiate(streetPrefab, nextStreetPosition + new Vector3(0, 0, i*streetLength), Quaternion.identity);
+                nextStreetPosition.z = streets[streetIndex].transform.position.z + streetLength;
+                streets[i] = Instantiate(streetPrefab, nextStreetPosition, Quaternion.identity);
+                streetIndex = i;
             }
         }
 
-        // destroy old street segments //TODO: lascia una strada come "buffer" prima di cancellarla
+        // destroy old street segments
         for (int i = 0; i < streets.Length; i++)
         {
-            if (player.transform.position.z > streets[i].transform.position.z + streetLength)
+            if (player.transform.position.z > streets[i].transform.position.z + 2*streetLength)
             {
                 Destroy(streets[i]);
             }

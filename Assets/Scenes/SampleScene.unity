@@ -442,7 +442,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   streetSpeed: 9
-  maxStreets: 3
+  maxStreets: 5
   streetPrefab: {fileID: 2630171847522182897, guid: 0210c49e4ec9d754d94e28de52de3fa9, type: 3}
   player: {fileID: 210520792}
 --- !u!4 &1077238189
