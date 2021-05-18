@@ -441,7 +441,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17a7172e41442bd45976623d9bc75ba4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  streetSpeed: 9
+  streetSpeed: 15
   maxStreets: 5
   streetPrefab: {fileID: 2630171847522182897, guid: 0210c49e4ec9d754d94e28de52de3fa9, type: 3}
   player: {fileID: 210520792}

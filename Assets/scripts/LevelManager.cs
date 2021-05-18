@@ -1,62 +1,39 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using Common;
 
 public class LevelManager : MonoBehaviour
 {
     [SerializeField]
-    private float streetSpeed = 9;
+    private float streetSpeed = 15;
     [SerializeField]
-    private int maxStreets = 3;
+    private int maxStreets = 5;
     [SerializeField]
     private GameObject streetPrefab;
     [SerializeField]
     private GameObject player;
 
     private GameObject[] streets;
-    private Renderer streetRenderer;
-    private float streetLength;
-    private int streetIndex = 0;
-    Vector3 nextStreetPosition = new Vector3(0, 0, 0);
+    private Tools.StreetManager lvl1StreetManager;
 
     private void Awake()
     {
+        // Initializing variables
         streets = new GameObject[maxStreets];
-        streets[0] = GameObject.Find("Street");
+        streets[0] = GameObject.Find("Street"); //TODO: may remove the first street and instantiate this too at runtime
 
-        streetRenderer = streetPrefab.GetComponentInChildren<MeshRenderer>();
-        streetLength = streetRenderer.bounds.size.z;
+        lvl1StreetManager = new Tools.StreetManager(streets, streetPrefab);
     }
 
-    void Update()
+    void FixedUpdate()
     {
         // instantiate new street segments
-        for (int i = 0; i < streets.Length; i++)
-        {
-            if (streets[i] == null)
-            {
-                nextStreetPosition.z = streets[streetIndex].transform.position.z + streetLength;
-                streets[i] = Instantiate(streetPrefab, nextStreetPosition, Quaternion.identity);
-                streetIndex = i;
-            }
-        }
+        lvl1StreetManager.SpawnStreetIfNull();
 
         // destroy old street segments
-        for (int i = 0; i < streets.Length; i++)
-        {
-            if (player.transform.position.z > streets[i].transform.position.z + 2*streetLength)
-            {
-                Destroy(streets[i]);
-            }
-        }
+        lvl1StreetManager.DestroyStreetIfOld();
 
         // move street segments
-        foreach (GameObject street in streets)
-        {
-            if (street != null)
-            {
-                street.transform.Translate(0, 0, -streetSpeed * Time.deltaTime);
-            }
-        }
+        float adjustedSpeed = streetSpeed / 100;
+        lvl1StreetManager.MoveStreets(adjustedSpeed);
     }
 }
