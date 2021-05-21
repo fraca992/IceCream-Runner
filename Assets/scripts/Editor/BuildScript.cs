@@ -9,7 +9,7 @@ public class BuildScript
         BuildPlayerOptions myBuildOptions = new BuildPlayerOptions();
 
         myBuildOptions.scenes = defaultScene;
-        myBuildOptions.locationPathName = "./Builds/ICR_Windowsx86";
+        myBuildOptions.locationPathName = "./Builds/IceCream Runnerx86.exe";
         myBuildOptions.target = BuildTarget.StandaloneWindows;
         myBuildOptions.options = BuildOptions.None;
 
