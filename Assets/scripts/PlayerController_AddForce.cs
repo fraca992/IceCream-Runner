@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController_AddForce : MonoBehaviour
 {
     private GameObject player;
     private Rigidbody playerRb;
