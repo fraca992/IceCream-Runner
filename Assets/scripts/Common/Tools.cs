@@ -4,18 +4,6 @@ namespace Common
 {
     public static class Tools
     {
-        static float GetSizeZ(GameObject obj)
-        {
-            //returns size Z of a GameObject using its MeshRenderer
-            Renderer objRenderer;
-            float length;
-
-            objRenderer = obj.GetComponentInChildren<MeshRenderer>();
-            length = objRenderer.bounds.size.z;
-
-            return length;
-        }
-
         public class StreetManager : Object
         {
             // Manages steet Spawning, Destroying and Moving
@@ -29,7 +17,7 @@ namespace Common
             {
                 this.streets = streets;
                 this.streetPrefab = streetPrefab;
-                streetLength = GetSizeZ(streetPrefab);
+                streetLength = GetSize(streetPrefab,'z');
             }
 
             // Instantiate new street segments
@@ -70,6 +58,33 @@ namespace Common
                     street?.transform.Translate(0, 0, -streetSpeed);
                 }
             }
+        }
+
+        public static float GetSize(GameObject obj, char direction)
+        {
+            //returns size along the chosen direction of a GameObject using its MeshRenderer
+            Renderer objRenderer;
+            float length;
+
+            objRenderer = obj.GetComponentInChildren<MeshRenderer>();
+
+            switch (direction)
+            {
+                case 'x': 
+                    length = objRenderer.bounds.size.x;
+                    break;
+                case 'y':
+                    length = objRenderer.bounds.size.y;
+                    break;
+                case 'z':
+                    length = objRenderer.bounds.size.z;
+                    break;
+                default:
+                    length = 0;
+                    break;
+            }
+
+            return length;
         }
     }
 }

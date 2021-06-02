@@ -407,8 +407,6 @@ GameObject:
   - component: {fileID: 1610137540}
   - component: {fileID: 1610137539}
   - component: {fileID: 1610137538}
-  - component: {fileID: 1610137545}
-  - component: {fileID: 1610137544}
   - component: {fileID: 1610137543}
   m_Layer: 0
   m_Name: Player
@@ -431,7 +429,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 112
   m_CollisionDetection: 0
 --- !u!65 &1610137539
 BoxCollider:
@@ -517,35 +515,9 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1610137537}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2ef3485437d67154397ba1d875b8ba92, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveVelocity: 20
---- !u!114 &1610137544
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1610137537}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8cf57739972c71d4d9f66aa7f2533ea4, type: 3}
+  m_Script: {fileID: 11500000, guid: c6b0b32c6a8e1504aa3b8c8fcc8df7a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveVelocityChange: 1
---- !u!114 &1610137545
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1610137537}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a6f7118435b514746b88191880236622, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveForce: 20
+  maxVelocity: 500
