@@ -2,13 +2,13 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    private GameObject player;
-    private Rigidbody playerRb;
-    private float lateralMovement;
-
     [SerializeField]
     private float maxVelocity = 500;
 
+    private GameObject player;
+    private Rigidbody playerRb;
+    private float lateralMovement;
+    
     void Awake()
     {
         player = gameObject;
@@ -18,9 +18,11 @@ public class PlayerController : MonoBehaviour
     void FixedUpdate()
     {
         float actualVelocity = maxVelocity * Time.deltaTime; // Ensures that even if we change physics update time, it stays constant
-
         lateralMovement = Input.GetAxis("Horizontal");
 
-        playerRb.velocity = lateralMovement * actualVelocity * Vector3.right;
+        // Using a temp playerVelocity ensures we can only modify the x component without messing with vertical or forward velocity
+        Vector3 playerVelocity = playerRb.velocity;
+        playerVelocity.x = lateralMovement * actualVelocity;
+        playerRb.velocity = playerVelocity;
     }
 }
