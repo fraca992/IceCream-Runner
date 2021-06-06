@@ -17,8 +17,10 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+        float actualVelocity = maxVelocity * Time.deltaTime; // Ensures that even if we change physics update time, it stays constant
+
         lateralMovement = Input.GetAxis("Horizontal");
 
-        playerRb.velocity = lateralMovement * maxVelocity * Time.deltaTime * Vector3.right;
+        playerRb.velocity = lateralMovement * actualVelocity * Vector3.right;
     }
 }
