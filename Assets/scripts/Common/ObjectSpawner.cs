@@ -1,5 +1,5 @@
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Common
 {
@@ -26,7 +26,7 @@ namespace Common
                 //budget -= obstacles[buyIndex].GetComponent<>();
             }
             
-            
+            // TODO: refctor using term ITEM as a way fo generalizing
 
             // TODO: choose a random obstacle
             
