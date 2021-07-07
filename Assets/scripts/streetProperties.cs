@@ -4,42 +4,54 @@ using Common;
 
 public class StreetProperties : MonoBehaviour
 {
+    #region ariables
     [SerializeField]
     private int zCellNumber = 10;
     [SerializeField]
     private int xCellNumber = 2;
 
-    public Vector3[] leftSidewalkCellCoords { get; set; }
-    public Vector3[] rightSidewalkCellCoords { get; set; }
+    public Vector3[] LeftSidewalkCellCoords { get; set; }
+    public Vector3[] RightSidewalkCellCoords { get; set; }
 
     private Vector3 oldPosition = new Vector3();
+    #endregion
 
     private void Awake()
+    {
+        CreateCellGrid();
+    }
+
+    void Update()
+    {
+        MoveCellGrid();
+    }
+
+    // Helper Methods
+    private void CreateCellGrid()
     {
         // Creates cell coordinates grid, separated by left and right sidewalk
         int cellNum = zCellNumber * xCellNumber;
         Vector3[] cellCoordinates = new Vector3[2 * cellNum];
-        leftSidewalkCellCoords = new Vector3[cellNum];
-        rightSidewalkCellCoords = new Vector3[cellNum];
-        
+        LeftSidewalkCellCoords = new Vector3[cellNum];
+        RightSidewalkCellCoords = new Vector3[cellNum];
+
         cellCoordinates = GetCellCoordinates(zCellNumber, xCellNumber);
-        Array.Copy(cellCoordinates, 0, leftSidewalkCellCoords, 0, leftSidewalkCellCoords.Length);
-        Array.Copy(cellCoordinates, leftSidewalkCellCoords.Length, rightSidewalkCellCoords, 0, rightSidewalkCellCoords.Length);
+        Array.Copy(cellCoordinates, 0, LeftSidewalkCellCoords, 0, LeftSidewalkCellCoords.Length);
+        Array.Copy(cellCoordinates, LeftSidewalkCellCoords.Length, RightSidewalkCellCoords, 0, RightSidewalkCellCoords.Length);
     }
 
-    void Update()
+    private void MoveCellGrid()
     {
         // Moves cell grid with the street
         Vector3 newPosition = transform.position;
         Vector3 movement = newPosition - oldPosition;
 
         oldPosition = newPosition;
-        MoveCellCoordinates(leftSidewalkCellCoords, movement);
-        MoveCellCoordinates(rightSidewalkCellCoords, movement);
+        MoveCellCoordinates(LeftSidewalkCellCoords, movement);
+        MoveCellCoordinates(RightSidewalkCellCoords, movement);
     }
 
-    // Helper Methods
-    Vector3[] GetCellCoordinates(int zCellNum, int xCellNum)
+    private Vector3[] GetCellCoordinates(int zCellNum, int xCellNum)
     {
         // Returns an array with the coordinates of each cell in the street segment
         // IMPORTANT: a sidewalk MUST have leght as a multiple of width, or the cells won't be square
@@ -77,7 +89,7 @@ public class StreetProperties : MonoBehaviour
         return cellCoords;
     }      
 
-    Vector3[] MoveCellCoordinates(Vector3[] cellCoords, Vector3 movement)
+    private Vector3[] MoveCellCoordinates(Vector3[] cellCoords, Vector3 movement)
     {
         // Moves cell grid to the new position
         for (int i = 0; i < cellCoords.Length; i++)
