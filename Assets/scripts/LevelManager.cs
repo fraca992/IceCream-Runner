@@ -59,5 +59,7 @@ public class LevelManager : MonoBehaviour
         // move street segments
         float adjustedSpeed = streetSpeed / 100;
         lvl1StreetManager.MoveStreets(adjustedSpeed);
+        
+        // TODO: should control speed of streetcontroller
     }
 }
