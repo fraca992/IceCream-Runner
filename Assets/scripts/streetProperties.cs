@@ -9,18 +9,27 @@ public class StreetProperties : MonoBehaviour
     private int zCellNumber = 10;
     [SerializeField]
     private int xCellNumber = 2;
+    [SerializeField]
+    private int startCellValue = 1;
 
-    public Vector3[] CellCoordinates { get; set; }
-
+    private int totCellNum;
     private Vector3 oldPosition = new Vector3();
-    int cellNum;
+
+    CellsProperties Cells;
     #endregion
+
+    public class CellsProperties // metti in tools?
+    {
+        public Vector3[] CellCoordinates { get; set; }
+        public int[] CellValues { get; set; }
+    }
 
     private void Awake()
     {
-        cellNum = zCellNumber * xCellNumber;
-        CellCoordinates = new Vector3[2 * cellNum];
-        CellCoordinates = GetCellCoordinates(xCellNumber, cellNum);
+        Cells = new CellsProperties();
+        totCellNum = 2 * zCellNumber * xCellNumber;
+        Cells.CellCoordinates = GetCellCoordinates(xCellNumber, totCellNum);
+        Cells.CellValues = SetCellValues(startCellValue, totCellNum);
     }
 
     void Update()
@@ -29,17 +38,17 @@ public class StreetProperties : MonoBehaviour
         Vector3 movement = newPosition - oldPosition;
         
         oldPosition = newPosition;
-        CellCoordinates = MoveCellCoordinates(movement, CellCoordinates);
+        Cells.CellCoordinates = MoveCellCoordinates(movement, Cells.CellCoordinates);
     }
 
     // Helper Methods
-    private Vector3[] GetCellCoordinates(int xCellNum, int cellNum)
+    private Vector3[] GetCellCoordinates(int xCellNum, int totCellNum)
     {
         // Returns an array with the coordinates of each cell in the street segment
         // IMPORTANT: a sidewalk MUST have leght as a multiple of width, or the cells won't be square
-        Vector3[] cellCoords = new Vector3[CellCoordinates.Length];
-        Vector3[] leftSidewalkCoords = new Vector3[cellNum];
-        Vector3[] rightSidewalkCoords = new Vector3[cellNum];
+        Vector3[] cellCoords = new Vector3[totCellNum];
+        Vector3[] leftSidewalkCoords = new Vector3[totCellNum/2];
+        Vector3[] rightSidewalkCoords = new Vector3[totCellNum/2];
 
         float streetWidth = Tools.GetSize(transform.GetChild(0).gameObject, 'x');
         float SidewalkHeight = Tools.GetSize(transform.GetChild(0).GetChild(0).gameObject, 'y');
@@ -48,7 +57,7 @@ public class StreetProperties : MonoBehaviour
         int zIndex = 0;
         int xIndex = 0;
 
-        for (int i = 0; i < cellNum; i++)
+        for (int i = 0; i < leftSidewalkCoords.Length; i++)
         {
             zIndex = i / xCellNum;
             xIndex = i - (zIndex * xCellNum);
@@ -68,9 +77,22 @@ public class StreetProperties : MonoBehaviour
         return cellCoords;
     }
 
+    private int[] SetCellValues(int value, int totCellNum)
+    {
+        // returns starting values for cells
+        int[] values = new int[totCellNum];
+
+        for (int i = 0; i < totCellNum; i++)
+        {
+            values[i] = value;
+        }
+
+        return values;
+    }
+
     private Vector3[] MoveCellCoordinates(Vector3 movement, Vector3[] cellCoords)
     {
-        // Moves cell coordinates with the street
+        // returns new cell coordinates to move with the street
         for (int i = 0; i < cellCoords.Length; i++)
         {
             cellCoords[i] += movement;
@@ -78,4 +100,20 @@ public class StreetProperties : MonoBehaviour
 
         return cellCoords;
     }
+
+    //private void OnDrawGizmos() //DEBUG
+    //{
+    //    if (!Application.isPlaying) return;
+    //    Gizmos.color = Color.red;
+    //    for (int i = 0; i < Cells.CellCoordinates.Length; i++)
+    //    {
+    //        Gizmos.DrawCube(Cells.CellCoordinates[i] + 0.5f*Vector3.up, new Vector3 (1,1,1)); 
+    //    }
+
+    //    Gizmos.color = Color.green;
+    //    for (int i = 0; i < Cells.CellCoordinates.Length; i++)
+    //    {
+    //        UnityEditor.Handles.Label(Cells.CellCoordinates[i] + 1.5f * Vector3.up, Cells.CellValues[i].ToString());
+    //    }
+    //}
 }
