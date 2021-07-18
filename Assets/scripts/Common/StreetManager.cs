@@ -5,7 +5,6 @@ namespace Common
     public class StreetManager : Object
     {
         // Manages steet Spawning, Destroying and Moving
-        // Attributes
         private GameObject[] streets;
         private GameObject streetPrefab;
         private float streetLength;

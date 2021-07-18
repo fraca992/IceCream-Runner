@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using Common;
 
@@ -17,8 +16,6 @@ public class StreetProperties : MonoBehaviour
 
     CellsProperties Cells;
     #endregion
-
-    
 
     private void Awake()
     {
@@ -95,12 +92,6 @@ public class StreetProperties : MonoBehaviour
         }
 
         return cellCoords;
-    }
-
-    public class CellsProperties
-    {
-        public Vector3[] CellCoordinates { get; set; }
-        public int[] CellValues { get; set; }
     }
 
     //private void OnDrawGizmos() //DEBUG
