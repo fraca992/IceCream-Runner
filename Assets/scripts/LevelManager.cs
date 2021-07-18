@@ -15,7 +15,7 @@ public class LevelManager : MonoBehaviour
     private GameObject streetPrefab;
     
     private GameObject[] streets;
-    private Tools.StreetManager lvl1StreetManager;
+    private StreetManager lvl1StreetManager;
     #endregion
 
     #region StreetBudgetVariables
@@ -34,7 +34,7 @@ public class LevelManager : MonoBehaviour
         // Initializing variables
         streets = new GameObject[maxStreets];
         streets[0] = GameObject.Find("Street"); //TODO: may remove the first street and instantiate this too at runtime
-        lvl1StreetManager = new Tools.StreetManager(streets, streetPrefab);
+        lvl1StreetManager = new StreetManager(streets, streetPrefab);
 
         StreetBudget = streetBudget;
         BudgetIncreaseRate = budgetIncreaseRate;
