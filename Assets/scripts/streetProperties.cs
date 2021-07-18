@@ -11,27 +11,44 @@ public class StreetProperties : MonoBehaviour
     [SerializeField]
     private int startCellValue = 1;
 
-    private int totCellNum;
-    private Vector3 oldPosition = new Vector3();
+    CellProperties[] streetCells;
 
-    CellsProperties Cells;
+    private int totCellNum;
+    private Vector3[] cellCoords;
+    private int[] cellValues;
+    private Vector3 oldPosition;
+    private Vector3 newPosition;
+    private Vector3 movement;
     #endregion
 
     private void Awake()
     {
-        Cells = new CellsProperties();
+        // creating the cell coordinates and initializing cell value with the starting value
         totCellNum = 2 * zCellNumber * xCellNumber;
-        Cells.CellCoordinates = GetCellCoordinates(xCellNumber, totCellNum);
-        Cells.CellValues = SetCellValues(startCellValue, totCellNum);
+        streetCells = Tools.InitializeArray<CellProperties>(totCellNum);
+        cellCoords = GetCellCoordinates(xCellNumber, totCellNum);
+        cellValues = GetCellValues(startCellValue, totCellNum);
+
+        for (int i = 0; i < streetCells.Length; i++)
+        {
+            streetCells[i].CellCoordinates = cellCoords[i];
+            streetCells[i].CellValue = cellValues[i];
+        }
     }
 
     void Update()
     {
-        Vector3 newPosition = transform.position;
-        Vector3 movement = newPosition - oldPosition;
-        
+        // moving cell coordinates with the street
+        newPosition = transform.position;
+        movement = newPosition - oldPosition; 
         oldPosition = newPosition;
-        Cells.CellCoordinates = MoveCellCoordinates(movement, Cells.CellCoordinates);
+
+        cellCoords = MoveCellCoordinates(movement, cellCoords);
+
+        for (int i = 0; i < streetCells.Length; i++)
+        {
+            streetCells[i].CellCoordinates = cellCoords[i];
+        }
     }
 
     // Helper Methods
@@ -70,7 +87,7 @@ public class StreetProperties : MonoBehaviour
         return cellCoords;
     }
 
-    private int[] SetCellValues(int value, int totCellNum)
+    private int[] GetCellValues(int value, int totCellNum)
     {
         // returns starting values for cells
         int[] values = new int[totCellNum];
@@ -97,16 +114,17 @@ public class StreetProperties : MonoBehaviour
     //private void OnDrawGizmos() //DEBUG
     //{
     //    if (!Application.isPlaying) return;
+
     //    Gizmos.color = Color.red;
-    //    for (int i = 0; i < Cells.CellCoordinates.Length; i++)
+    //    for (int i = 0; i < streetCells.Length; i++)
     //    {
-    //        Gizmos.DrawCube(Cells.CellCoordinates[i] + 0.5f*Vector3.up, new Vector3 (1,1,1)); 
+    //        Gizmos.DrawCube(streetCells[i].CellCoordinates + 0.5f * Vector3.up, new Vector3(1, 1, 1));
     //    }
 
-    //    Gizmos.color = Color.green;
-    //    for (int i = 0; i < Cells.CellCoordinates.Length; i++)
+    //    UnityEditor.Handles.color = Color.green;
+    //    for (int i = 0; i < streetCells.Length; i++)
     //    {
-    //        UnityEditor.Handles.Label(Cells.CellCoordinates[i] + 1.5f * Vector3.up, Cells.CellValues[i].ToString());
+    //        UnityEditor.Handles.Label(streetCells[i].CellCoordinates + 1.5f * Vector3.up, streetCells[i].CellValue.ToString());
     //    }
     //}
 }
