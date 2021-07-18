@@ -18,7 +18,7 @@ namespace Common
         }
 
         // Instantiate new street segments
-        private int newestStreetIndex = 0; // TODO: farthestStreetIndex might need to be static if i plan to instantiate a new StreetManager for new kind of streets
+        private int newestStreetIndex = 0;
         public void SpawnStreetIfNull()
         {
             Vector3 nextStreetPosition = new Vector3();

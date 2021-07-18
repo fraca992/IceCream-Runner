@@ -111,20 +111,20 @@ public class StreetProperties : MonoBehaviour
         return cellCoords;
     }
 
-    //private void OnDrawGizmos() //DEBUG
-    //{
-    //    if (!Application.isPlaying) return;
+    private void OnDrawGizmos() //DEBUG
+    {
+        if (!Application.isPlaying) return;
 
-    //    Gizmos.color = Color.red;
-    //    for (int i = 0; i < streetCells.Length; i++)
-    //    {
-    //        Gizmos.DrawCube(streetCells[i].CellCoordinates + 0.5f * Vector3.up, new Vector3(1, 1, 1));
-    //    }
+        Gizmos.color = Color.red;
+        for (int i = 0; i < streetCells.Length; i++)
+        {
+            Gizmos.DrawCube(streetCells[i].CellCoordinates + 0.5f * Vector3.up, new Vector3(1, 1, 1));
+        }
 
-    //    UnityEditor.Handles.color = Color.green;
-    //    for (int i = 0; i < streetCells.Length; i++)
-    //    {
-    //        UnityEditor.Handles.Label(streetCells[i].CellCoordinates + 1.5f * Vector3.up, streetCells[i].CellValue.ToString());
-    //    }
-    //}
+        UnityEditor.Handles.color = Color.green;
+        for (int i = 0; i < streetCells.Length; i++)
+        {
+            UnityEditor.Handles.Label(streetCells[i].CellCoordinates + 1.5f * Vector3.up, streetCells[i].CellValue.ToString());
+        }
+    }
 }
