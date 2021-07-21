@@ -1,20 +1,22 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Properties;
 
-namespace Common
+namespace Controller
 {
-    public class ItemManager : Object
+    public class ItemController : Object
     {
         private List<GameObject> items = new List<GameObject>();
         private string itemType;
 
         // Constructor
-        public ItemManager(string itmType)
+        public ItemController(string itmType)
         {
-            // Loading all obstacle prefabs
+            // Loading all items from Resources in itmType folder
             items.AddRange(Resources.LoadAll<GameObject>(itmType));
         }
 
+        // Methods
         void SpawnItems(int budget, CellProperties[] cells)
         {
             // buy items using budget

@@ -11,7 +11,7 @@ public class debugspawn : MonoBehaviour
         float pickSize = size * 2f;
 
 
-        if (Handles.Button(this.transform.position, Quaternion.identity, size, pickSize, Handles.RectangleHandleCap))
-            this.GetComponentInParent<StreetProperties>().;
+        //if (Handles.Button(this.transform.position, Quaternion.identity, size, pickSize, Handles.RectangleHandleCap))
+        //    this.GetComponentInParent<StreetProperties>().;
     }
 }
