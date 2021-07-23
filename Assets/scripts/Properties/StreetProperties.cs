@@ -13,7 +13,7 @@ namespace Properties
         [SerializeField]
         private int startCellValue = 1;
 
-        CellProperties[] streetCells;
+        public CellProperties[] streetCells; //DEBUG spawn
 
         private int totCellNum;
         private Vector3[] cellCoords;
@@ -113,22 +113,22 @@ namespace Properties
             return cellCoords;
         }
 
-        private void OnDrawGizmos() //DEBUG
-        {
-            if (!Application.isPlaying) return;
+        //private void OnDrawGizmos() //DEBUG gizmos
+        //{
+        //    if (!Application.isPlaying) return;
 
-            Gizmos.color = Color.red;
-            for (int i = 0; i < streetCells.Length; i++)
-            {
-                Gizmos.DrawCube(streetCells[i].CellCoordinates + 0.5f * Vector3.up, new Vector3(1, 1, 1));
-            }
+        //    Gizmos.color = Color.red;
+        //    for (int i = 0; i < streetCells.Length; i++)
+        //    {
+        //        Gizmos.DrawCube(streetCells[i].CellCoordinates + 0.5f * Vector3.up, new Vector3(1, 1, 1));
+        //    }
 
-            UnityEditor.Handles.color = Color.green;
-            for (int i = 0; i < streetCells.Length; i++)
-            {
-                UnityEditor.Handles.Label(streetCells[i].CellCoordinates + 1.5f * Vector3.up, streetCells[i].CellValue.ToString());
-            }
-        }
+        //    UnityEditor.Handles.color = Color.green;
+        //    for (int i = 0; i < streetCells.Length; i++)
+        //    {
+        //        UnityEditor.Handles.Label(streetCells[i].CellCoordinates + 1.5f * Vector3.up, streetCells[i].CellValue.ToString());
+        //    }
+        //}
     }
 
 }

@@ -1,5 +1,6 @@
 using UnityEngine;
 using Controller;
+using Properties;
 
 namespace Manager
 {
@@ -10,9 +11,24 @@ namespace Manager
         [SerializeField]
         private float budgetIncreaseRate = 0.1f;
 
+        private ItemController obstaclesController;
+
+        public bool Spawn; // DEBUG spawn
+        public GameObject Street; // DEBUG spawn
+
+        private void Awake()
+        {
+            obstaclesController = new ItemController("Obstacles");
+        }
+
+
         void Update()
         {
-            //TODO: street budget tracker/increase
+            if (Spawn) // DEBUG spawn
+            {
+                obstaclesController.SpawnItems(10,Street.GetComponent<StreetProperties>().streetCells);
+                Spawn = false;
+            }
         }
     }
 }

@@ -6,6 +6,7 @@ namespace Controller
 {
     public class ItemController : Object
     {
+        // Controller for item Spawning
         private List<GameObject> items = new List<GameObject>();
         private string itemType;
 
@@ -17,7 +18,7 @@ namespace Controller
         }
 
         // Methods
-        void SpawnItems(int budget, CellProperties[] cells)
+        public void SpawnItems(int budget, CellProperties[] cells)
         {
             // buy items using budget
             int buyIndex;
@@ -36,19 +37,19 @@ namespace Controller
             // spawn items
             while (boughtItems.Count > 0)
             {
-                //choose a random cell
+                // choose a random cell
                 int cellIndex = Random.Range(0, cells.Length); // TOFIX: Implement distributed probability for random cell picker
                 CellProperties chosenCell = cells[cellIndex];
 
-                // TODO: spawn item
+                // spawn item
                 bool canSpawn = chosenCell.CellValue > 0;
                 if (canSpawn)
                 {
-                    Instantiate(boughtItems[0]);
+                    Instantiate(boughtItems[0],chosenCell.CellCoordinates,Quaternion.identity);
                     boughtItems.RemoveAt(0);
+                    chosenCell.CellValue -= boughtItems[0].GetComponent<ItemProperties>().Cost;
 
-                    // TODO: update cell points, remember to differentiate between 2 sidewalks!
-                    chosenCell.CellValue -= boughtItems[0].GetComponent<ItemProperties>().Cost; 
+                    // TODO: update cell points of neighbouring cells, remember to differentiate between 2 sidewalks!
                 }
             }
         }
