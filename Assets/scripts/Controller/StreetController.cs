@@ -1,63 +1,95 @@
-﻿using UnityEngine;
+using UnityEngine;
 using Common;
+using Properties;
+using Manager;
 
 namespace Controller
 {
-    public class StreetController : Object
+    public class StreetController : MonoBehaviour
     {
-        // Controller for steet Spawning, Destroying and Moving
-        private GameObject[] streets;
+        #region Street Variables
+        [SerializeField]
+        private GameObject player;
+        [SerializeField]
+        private float streetSpeed = 15;
+        [SerializeField]
+        private int maxStreets = 5;
+        [SerializeField]
         private GameObject streetPrefab;
-        private float streetLength;
-        private int newestStreetIndex = 0;
 
-        // Constructor
-        public StreetController(GameObject[] streets, GameObject streetPrefab)
+        private GameObject[] streets;
+        private StreetManager lvl1StreetManager;
+        private GameObject newestStreet;
+        #endregion
+
+        #region Cell Variables
+        [SerializeField]
+        private int zCellNumber = 10;
+        [SerializeField]
+        private int xCellNumber = 2;
+        [SerializeField]
+        private int startCellValue = 1;
+
+        private int totCellNum;
+        private Vector3[] cellCoords;
+        private StreetProperties.CellProperties[] streetCells;
+        private Vector3 oldPosition;
+        private Vector3 newPosition;
+        private Vector3 movement;
+        #endregion
+
+        private void Awake()
         {
-            this.streets = streets;
-            this.streetPrefab = streetPrefab;
-            streetLength = Tools.GetSize(streetPrefab, 'z');
+            // Initializing variables
+            streets = new GameObject[maxStreets];
+            lvl1StreetManager = new StreetManager(streets, streetPrefab);
+            totCellNum = 2 * zCellNumber * xCellNumber;
+
+            streets[0] = GameObject.Find("Street"); //REVIEW: may remove the first street and instantiate this too at runtime
         }
 
-        // Methods
-        public void SpawnStreetIfNull()
+        void FixedUpdate()
         {
-            // Instantiate new street segments
-            Vector3 nextStreetPosition = new Vector3();
+            // instantiate new street segments and their cells
+            newestStreet = lvl1StreetManager.SpawnStreetIfNull();
+            if (newestStreet != null) lvl1StreetManager.InitializeCells(newestStreet, totCellNum, totCellNum, startCellValue);
 
+            // destroy old street segments
+            lvl1StreetManager.DestroyStreetIfOld();
+
+            // move street segments
+            float adjustedSpeed = streetSpeed * Time.deltaTime;
+            lvl1StreetManager.MoveStreets(adjustedSpeed);
+
+
+            // moving cell coordinates with the street
             for (int i = 0; i < streets.Length; i++)
             {
-                if (streets[i] == null)
+                newPosition = streets[i].transform.position;
+                movement = newPosition - oldPosition;
+                oldPosition = newPosition;
+                cellCoords = lvl1StreetManager.MoveCellCoordinates(movement, cellCoords);
+                for (int j = 0; j < streetCells.Length; j++)
                 {
-                    nextStreetPosition.z = streets[newestStreetIndex].transform.position.z + streetLength;
-                    streets[i] = Instantiate(streetPrefab, nextStreetPosition, Quaternion.identity);
-                    newestStreetIndex = i;
+                    streetCells[i].CellCoordinates = cellCoords[i];
                 }
             }
         }
+        //private void OnDrawGizmos() //DEBUG gizmos
+        //{
+        //    if (!Application.isPlaying) return;
 
-        
-        public void DestroyStreetIfOld(int bufferStreetNumber = 2)
-        {
-            // Destroy old street segments
-            float bufferLength = -bufferStreetNumber * streetLength;
-            for (int i = 0; i < streets.Length; i++)
-            {
-                if (streets[i].transform.position.z < bufferLength)
-                {
-                    Destroy(streets[i]);
-                }
-            }
-        }
+        //    Gizmos.color = Color.red;
+        //    for (int i = 0; i < streetCells.Length; i++)
+        //    {
+        //        Gizmos.DrawCube(streetCells[i].CellCoordinates + 0.5f * Vector3.up, new Vector3(1, 1, 1));
+        //    }
 
-        
-        public void MoveStreets(float streetSpeed)
-        {
-            // Move street segments
-            foreach (GameObject street in streets)
-            {
-                street?.transform.Translate(0, 0, -streetSpeed);
-            }
-        }
+        //    UnityEditor.Handles.color = Color.green;
+        //    for (int i = 0; i < streetCells.Length; i++)
+        //    {
+        //        UnityEditor.Handles.Label(streetCells[i].CellCoordinates + 1.5f * Vector3.up, streetCells[i].CellValue.ToString());
+        //    }
+        //}
     }
 }
