@@ -15,3 +15,7 @@ namespace Properties
         }
     }
 }
+
+
+// iMPORTANTE! questo deve avere dentro il GameObject Street anche
+// quindi il Manager deve instanziare un array non di street, ma una Lista di tipo StreetProperties (rinomina a Street?) e quando distrugge, rimuove elemento da Lista.

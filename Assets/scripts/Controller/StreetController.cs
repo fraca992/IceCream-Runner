@@ -9,17 +9,14 @@ namespace Controller
     {
         #region Street Variables
         [SerializeField]
-        private GameObject player;
-        [SerializeField]
         private float streetSpeed = 15;
         [SerializeField]
         private int maxStreets = 5;
         [SerializeField]
         private GameObject streetPrefab;
-
-        private GameObject[] streets;
+        
         private StreetManager lvl1StreetManager;
-        private GameObject newestStreet;
+        private GameObject newestStreetIndex;
         #endregion
 
         #region Cell Variables
@@ -41,18 +38,15 @@ namespace Controller
         private void Awake()
         {
             // Initializing variables
-            streets = new GameObject[maxStreets];
-            lvl1StreetManager = new StreetManager(streets, streetPrefab);
+            lvl1StreetManager = new StreetManager(maxStreets, streetPrefab);
             totCellNum = 2 * zCellNumber * xCellNumber;
-
-            streets[0] = GameObject.Find("Street"); //REVIEW: may remove the first street and instantiate this too at runtime
         }
 
         void FixedUpdate()
         {
             // instantiate new street segments and their cells
-            newestStreet = lvl1StreetManager.SpawnStreetIfNull();
-            if (newestStreet != null) lvl1StreetManager.InitializeCells(newestStreet, totCellNum, totCellNum, startCellValue);
+            newestStreetIndex = lvl1StreetManager.SpawnStreetIfNull(); //REVIEW: could call Initialize Cells inside SpawnStreetIfNull. Is there a reason for doing it explicitely?
+            if (newestStreet != null) lvl1StreetManager.InitializeCells(newestStreetIndex, xCellNumber, totCellNum, startCellValue);
 
             // destroy old street segments
             lvl1StreetManager.DestroyStreetIfOld();
@@ -61,13 +55,10 @@ namespace Controller
             float adjustedSpeed = streetSpeed * Time.deltaTime;
             lvl1StreetManager.MoveStreets(adjustedSpeed);
 
-
             // moving cell coordinates with the street
-            for (int i = 0; i < streets.Length; i++)
+            //TODO: put inside MoveStreets
+            for (int i = 0; i < maxStreets; i++)
             {
-                newPosition = streets[i].transform.position;
-                movement = newPosition - oldPosition;
-                oldPosition = newPosition;
                 cellCoords = lvl1StreetManager.MoveCellCoordinates(movement, cellCoords);
                 for (int j = 0; j < streetCells.Length; j++)
                 {

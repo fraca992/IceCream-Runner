@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using Common;
 using Properties;
 
@@ -13,16 +13,17 @@ namespace Manager
         private int newestStreetIndex = 0;
 
         // Constructor
-        public StreetManager(GameObject[] streets, GameObject streetPrefab)
+        public StreetManager(int maxStreets, GameObject streetPrefab)
         {
-            this.streets = streets;
+            streets = new GameObject[maxStreets];
+            streets[0] = GameObject.Find("Street"); //REVIEW: may remove the first street and instantiate this too at runtime
             this.streetPrefab = streetPrefab;
             streetLength = Tools.GetSize(streetPrefab, 'z');
         }
 
         // Methods
         #region Street Methods
-        public GameObject SpawnStreetIfNull()
+        public int SpawnStreetIfNull()
         {
             // Instantiate new street segments
             Vector3 nextStreetPosition = new Vector3();
@@ -34,8 +35,8 @@ namespace Manager
                     nextStreetPosition.z = streets[newestStreetIndex].transform.position.z + streetLength;
                     streets[i] = Instantiate(streetPrefab, nextStreetPosition, Quaternion.identity);
                     newestStreetIndex = i;
-
-                    return streets[i];
+                    
+                    return newestStreetIndex;
                 }
             }
             return null;
@@ -65,32 +66,32 @@ namespace Manager
         #endregion
 
         #region Cell Methods
-        public StreetProperties.CellProperties[] InitializeCells(GameObject street, int xCellNum, int cellNumber, int startValue)
+        public void InitializeCells(int streetIndex, int xCellNum, int cellNumber, int startValue)
         {
             // creating the cell coordinates and initializing cell value with the starting value
             StreetProperties.CellProperties[] cells;
             Vector3[] cellCoords;
             int[] cellValues;
 
-            cells = Tools.InitializeArray<StreetProperties.CellProperties>(cellNumber);
+            streets[streetIndex].StreetCells = Tools.InitializeArray<StreetProperties.CellProperties>(cellNumber);
             cellCoords = GetCellCoordinates(street, xCellNum, cellNumber);
             cellValues = GetCellValues(startValue, cellNumber);
 
             for (int i = 0; i < cells.Length; i++)
             {
-                cells[i].CellCoordinates = cellCoords[i];
-                cells[i].CellValue = cellValues[i];
+                streets[streetIndex].StreetCells.CellCoordinates = cellCoords[i];
+                streets[streetIndex].StreetCells.CellValue = cellValues[i];
             }
-            return cells;
         }
 
-        public Vector3[] GetCellCoordinates(GameObject street, int xCellNum, int cellNumber)
+        public Vector3[] GetCellCoordinates(int streetIndex, int xCellNum, int cellNumber)
         {
             // Returns an array with the coordinates of each cell in the street segment
             // IMPORTANT: a sidewalk MUST have leght as a multiple of width, or the cells won't be square
             Vector3[] cellCoords = new Vector3[cellNumber];
             Vector3[] leftSidewalkCoords = new Vector3[cellNumber / 2];
             Vector3[] rightSidewalkCoords = new Vector3[cellNumber / 2];
+            GameObject street = streets[streetIndex];
 
             float streetWidth = Tools.GetSize(street.transform.GetChild(0).gameObject, 'x');
             float SidewalkHeight = Tools.GetSize(street.transform.GetChild(0).GetChild(0).gameObject, 'y');
