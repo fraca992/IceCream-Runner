@@ -493,9 +493,21 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1165182600639590624, guid: 0210c49e4ec9d754d94e28de52de3fa9, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2630171847522182897, guid: 0210c49e4ec9d754d94e28de52de3fa9, type: 3}
       propertyPath: m_Name
       value: Street
+      objectReference: {fileID: 0}
+    - target: {fileID: 4482038707658503467, guid: 0210c49e4ec9d754d94e28de52de3fa9, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7061159226932710686, guid: 0210c49e4ec9d754d94e28de52de3fa9, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9082631136419315520, guid: 0210c49e4ec9d754d94e28de52de3fa9, type: 3}
       propertyPath: m_RootOrder

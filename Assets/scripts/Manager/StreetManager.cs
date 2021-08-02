@@ -1,44 +1,45 @@
+using System.Collections.Generic;
 using UnityEngine;
 using Common;
-using Properties;
 
 namespace Manager
 {
     public class StreetManager : Object
     {
         // Manager for steet Spawning, Destroying and Moving
-        private GameObject[] streets;
+        private List<Street> streets = new List<Street>();
         private GameObject streetPrefab;
+        private int maxStreets;
         private float streetLength;
         private int newestStreetIndex = 0;
-
+        
         // Constructor
         public StreetManager(int maxStreets, GameObject streetPrefab)
         {
-            streets = new GameObject[maxStreets];
-            streets[0] = GameObject.Find("Street"); //REVIEW: may remove the first street and instantiate this too at runtime
+            this.maxStreets = maxStreets;
             this.streetPrefab = streetPrefab;
             streetLength = Tools.GetSize(streetPrefab, 'z');
         }
 
         // Methods
         #region Street Methods
-        public int SpawnStreetIfNull()
+        public int? SpawnStreetIfNeeded(int streetBudget, int xCellNum, int cellNumber, int startCellValue)
         {
-            // Instantiate new street segments
+            // Instantiate a new street segment
             Vector3 nextStreetPosition = new Vector3();
 
-            for (int i = 0; i < streets.Length; i++)
+            if (streets.Count < maxStreets)
             {
-                if (streets[i] == null)
-                {
-                    nextStreetPosition.z = streets[newestStreetIndex].transform.position.z + streetLength;
-                    streets[i] = Instantiate(streetPrefab, nextStreetPosition, Quaternion.identity);
-                    newestStreetIndex = i;
-                    
-                    return newestStreetIndex;
-                }
+                nextStreetPosition.z = streets[newestStreetIndex].StreetObject.transform.position.z + streetLength;
+                List<Street.CellProperties> newCells = InitializeCells(newestStreetIndex, xCellNum, cellNumber, startCellValue);
+                Street newStreet = new Street(Instantiate(streetPrefab, nextStreetPosition, Quaternion.identity), streetBudget, newCells);
+
+                streets.Add(newStreet);
+                newestStreetIndex = streets.Count - 1;
+
+                return newestStreetIndex;
             }
+
             return null;
         }
 
@@ -46,42 +47,44 @@ namespace Manager
         {
             // Destroy old street segments behind the player
             float bufferLength = -bufferStreetNumber * streetLength;
-            for (int i = 0; i < streets.Length; i++)
+            for (int i = 0; i < streets.Count; i++)
             {
-                if (streets[i].transform.position.z < bufferLength)
+                if (streets[i].StreetObject.transform.position.z < bufferLength)
                 {
-                    Destroy(streets[i]);
+                    Destroy(streets[i].StreetObject);
+                    streets.RemoveAt(i);
                 }
             }
         }
 
-        public void MoveStreets(float streetSpeed)
+        public void MoveStreets(float streetMovement)
         {
             // Move street segments
-            foreach (GameObject street in streets)
+            foreach (Street street in streets)
             {
-                street?.transform.Translate(0, 0, -streetSpeed);
+                street?.StreetObject.transform.Translate(0, 0, -streetMovement);
+                MoveCellCoordinates(-streetMovement, street.Cells);
             }
         }
         #endregion
 
         #region Cell Methods
-        public void InitializeCells(int streetIndex, int xCellNum, int cellNumber, int startValue)
+        public List<Street.CellProperties> InitializeCells(int streetIndex, int xCellNum, int cellNumber, int startValue)
         {
-            // creating the cell coordinates and initializing cell value with the starting value
-            StreetProperties.CellProperties[] cells;
+            // creates a new cell list
+            List<Street.CellProperties> newCells = new List<Street.CellProperties>();
             Vector3[] cellCoords;
             int[] cellValues;
 
-            streets[streetIndex].StreetCells = Tools.InitializeArray<StreetProperties.CellProperties>(cellNumber);
-            cellCoords = GetCellCoordinates(street, xCellNum, cellNumber);
+            cellCoords = GetCellCoordinates(streetIndex, xCellNum, cellNumber);
             cellValues = GetCellValues(startValue, cellNumber);
 
-            for (int i = 0; i < cells.Length; i++)
+            for (int i = 0; i < cellNumber; i++)
             {
-                streets[streetIndex].StreetCells.CellCoordinates = cellCoords[i];
-                streets[streetIndex].StreetCells.CellValue = cellValues[i];
+                newCells.Add(new Street.CellProperties(cellCoords[i], cellValues[i]));
             }
+
+            return newCells;
         }
 
         public Vector3[] GetCellCoordinates(int streetIndex, int xCellNum, int cellNumber)
@@ -91,7 +94,7 @@ namespace Manager
             Vector3[] cellCoords = new Vector3[cellNumber];
             Vector3[] leftSidewalkCoords = new Vector3[cellNumber / 2];
             Vector3[] rightSidewalkCoords = new Vector3[cellNumber / 2];
-            GameObject street = streets[streetIndex];
+            GameObject street = streets[streetIndex].StreetObject;
 
             float streetWidth = Tools.GetSize(street.transform.GetChild(0).gameObject, 'x');
             float SidewalkHeight = Tools.GetSize(street.transform.GetChild(0).GetChild(0).gameObject, 'y');
@@ -133,17 +136,30 @@ namespace Manager
             return values;
         }
 
-        public Vector3[] MoveCellCoordinates(Vector3 movement, Vector3[] cellCoords)
+        public void MoveCellCoordinates(float movement, List<Street.CellProperties> cells)
         {
             // returns new cell coordinates to move with the street
-            for (int i = 0; i < cellCoords.Length; i++)
+            for (int i = 0; i < cells.Count; i++)
             {
-                cellCoords[i] += movement;
+                cells[i].Coordinates += new Vector3(0, 0, movement);
             }
-
-            return cellCoords;
         }
         #endregion
 
+        private void OnDrawGizmos() //DEBUG gizmos
+        {
+            if (!Application.isPlaying) return;
+
+            Gizmos.color = Color.red;
+            for (int i = 0; i < streets.Count; i++)
+            {
+                for (int k = 0; k < streets[i].Cells.Count; k++)
+                {
+                    Gizmos.DrawCube(streets[i].Cells[k].Coordinates + 0.5f * Vector3.up, new Vector3(1, 1, 1));
+
+                    UnityEditor.Handles.Label(streets[i].Cells[k].Coordinates + 1.5f * Vector3.up, streets[i].Cells[k].Value.ToString());
+                }
+            }
+        }
     }
 }
