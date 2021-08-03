@@ -8,6 +8,6 @@ public class debugspawn : MonoBehaviour
 {
     public void OnButtonPress()
     {
-        GameObject.Find("LevelManager").GetComponent<ItemManager>().Spawn = true;
+        //GameObject.Find("LevelManager").GetComponent<ItemManager>().Spawn = true;
     }
 }

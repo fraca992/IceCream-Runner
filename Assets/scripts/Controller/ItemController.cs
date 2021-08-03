@@ -1,14 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Common;
 using Properties;
 
 namespace Controller
 {
     public class ItemController : Object
     {
-        // Controller for item Spawning
         private List<GameObject> items = new List<GameObject>();
-        private string itemType;
 
         // Constructor
         public ItemController(string itmType)
@@ -18,7 +17,28 @@ namespace Controller
         }
 
         // Methods
-        public void SpawnItems(int budget, CellProperties[] cells)
+        public void SpawnItems(int budget, List<Street.CellProperties> cells)
+        {
+            List<GameObject> boughtItems = BuyItems(ref budget);
+
+            // spawn items
+            while (boughtItems.Count > 0)
+            {
+                // choose a random cell
+                int cellIndex = Random.Range(0, cells.Count); // TOFIX: Implement distributed probability for random cell picker
+                Street.CellProperties chosenCell = cells[cellIndex];
+
+                // spawn item, remove it from the list and remove the cell from cells list
+                Instantiate(boughtItems[0], chosenCell.Coordinates, Quaternion.identity);
+                boughtItems.RemoveAt(0);
+                cells.RemoveAt(cellIndex);
+
+                // TODO: update cell points of neighbouring cells, remember to differentiate between 2 sidewalks!
+            }
+        }
+
+        // Helper Methods
+        private List<GameObject> BuyItems(ref int budget)
         {
             // buy items using budget
             int buyIndex;
@@ -27,31 +47,15 @@ namespace Controller
             while (budget > 0) // REVIEW: could be useful to put a counter of sorts to break the while if it takes too long to find a suitable item?
             {
                 buyIndex = Random.Range(0, items.Count);
-                if (budget > items[buyIndex].GetComponent<ItemProperties>().Cost)
+                int itemCost = items[buyIndex].GetComponent<ItemProperties>().CostValue;
+                if (budget > itemCost)
                 {
                     boughtItems.Add(items[buyIndex]);
-                    budget -= items[buyIndex].GetComponent<ItemProperties>().Cost;
+                    budget -= itemCost;
                 }
             }
 
-            // spawn items
-            while (boughtItems.Count > 0)
-            {
-                // choose a random cell
-                int cellIndex = Random.Range(0, cells.Length); // TOFIX: Implement distributed probability for random cell picker
-                CellProperties chosenCell = cells[cellIndex];
-
-                // spawn item
-                bool canSpawn = chosenCell.CellValue > 0;
-                if (canSpawn)
-                {
-                    Instantiate(boughtItems[0],chosenCell.CellCoordinates,Quaternion.identity);
-                    boughtItems.RemoveAt(0);
-                    chosenCell.CellValue -= boughtItems[0].GetComponent<ItemProperties>().Cost;
-
-                    // TODO: update cell points of neighbouring cells, remember to differentiate between 2 sidewalks!
-                }
-            }
+            return boughtItems;
         }
     } 
 }

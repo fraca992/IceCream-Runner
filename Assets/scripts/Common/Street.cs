@@ -16,8 +16,6 @@ namespace Common
             Cells = cells;
         }
 
-
-
         public class CellProperties
         {
             public Vector3 Coordinates { get; set; }
