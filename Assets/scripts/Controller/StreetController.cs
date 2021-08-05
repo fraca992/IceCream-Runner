@@ -102,10 +102,19 @@ namespace Controller
             int zIndex = 0;
             int xIndex = 0;
 
+            //DEBUG
+            for (int i = 0; i < leftSidewalkCoords.Length; i++)
+            {
+                leftSidewalkCoords[i] = street.transform.position;
+                rightSidewalkCoords[i] = street.transform.position;
+            }
+
             for (int i = 0; i < leftSidewalkCoords.Length; i++)
             {
                 zIndex = i / xCellNum;
-                xIndex = i - (zIndex * xCellNum);
+                xIndex = i - (i / xCellNum) * xCellNum;
+                //DEBUG
+                Vector3 test = new Vector3(-(streetWidth / 2f + (xIndex + 0.5f) * cellWidth), SidewalkHeight / 2f, (zIndex + 0.5f) * cellWidth);
 
                 leftSidewalkCoords[i].x += -(streetWidth / 2f + (xIndex + 0.5f) * cellWidth);
                 leftSidewalkCoords[i].y += SidewalkHeight / 2f;
