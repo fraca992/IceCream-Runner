@@ -31,24 +31,30 @@ namespace Manager
         private int totCellNum;
         #endregion
 
+        //DEBUG spawn
+        public bool dbSpawn;
+        public int num;
+
         private void Awake()
         {
             // Initializing variables
             lvl1StreetController = new StreetController(maxStreets, streetPrefab);
             totCellNum = 2 * zCellNumber * xCellNumber;
-            int spawnResult = 0;
-            while (spawnResult != -1)
+            bool hasSpawned;
+            do
             {
-                spawnResult = lvl1StreetController.SpawnStreetIfNeeded(streetBudget, xCellNumber, totCellNum, baseCellValue);
-            }
+                hasSpawned = lvl1StreetController.SpawnStreetIfNeeded(streetBudget, xCellNumber, totCellNum, baseCellValue);
+            } while (hasSpawned);
 
             obstaclesController = new ItemController("Obstacles");
         }
 
         void FixedUpdate()
         {
+            bool hasSpawned;
+
             // instantiate a new Street segment if needed, and initialises its cells
-            lvl1StreetController.SpawnStreetIfNeeded(streetBudget, xCellNumber, totCellNum, baseCellValue);
+            hasSpawned = lvl1StreetController.SpawnStreetIfNeeded(streetBudget, xCellNumber, totCellNum, baseCellValue);
 
             // destroy old street segments
             lvl1StreetController.DestroyStreetIfOld();
@@ -56,6 +62,19 @@ namespace Manager
             // move street segments
             float adjustedSpeed = streetSpeed * Time.deltaTime;
             lvl1StreetController.MoveStreets(adjustedSpeed);
+
+            // spawn item
+            //if (hasSpawned)
+            //{
+            //    obstaclesController.SpawnItems(streetBudget, lvl1StreetController.Streets[lvl1StreetController.Streets.Count - 1].Cells);
+            //}
+
+            //DEBUG spawn items w/ button
+            if (dbSpawn)
+            {
+                obstaclesController.SpawnItems(streetBudget, lvl1StreetController.Streets[num].Cells);
+                dbSpawn = false;
+            }
         }
 
         private void OnDrawGizmos() //DEBUG gizmos

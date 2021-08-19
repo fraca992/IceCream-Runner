@@ -22,7 +22,7 @@ namespace Controller
 
         // Helper Methods
         #region Street Methods
-        public int SpawnStreetIfNeeded(int streetBudget, int xCellNum, int cellNumber, int startCellValue)
+        public bool SpawnStreetIfNeeded(int streetBudget, int xCellNum, int cellNumber, int startCellValue)
         {
             // Instantiate a new street segment
             Vector3 nextStreetPosition = new Vector3();
@@ -37,10 +37,10 @@ namespace Controller
 
                 Streets.Add(newStreet);
 
-                return 0;
+                return true;
             }
 
-            return -1;
+            return false;
         }
 
         public void DestroyStreetIfOld(int bufferStreetNumber = 2)
