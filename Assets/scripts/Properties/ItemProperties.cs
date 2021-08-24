@@ -13,7 +13,7 @@ namespace Properties
         public int CostValue { get; private set; }
         public int CostDistance { get; private set; }
 
-        private void Awake()
+        public void InitializeItemProperties()
         {
             CostValue = costValue;
             CostDistance = costDistance;

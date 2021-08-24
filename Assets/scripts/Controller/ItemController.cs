@@ -41,18 +41,22 @@ namespace Controller
         private List<GameObject> BuyItems(ref int budget)
         {
             // buy items using budget
+            int watchDog = 0;
             int buyIndex;
             List<GameObject> boughtItems = new List<GameObject>();
 
-            while (budget > 0) // REVIEW: could be useful to put a counter of sorts to break the while if it takes too long to find a suitable item?
+            while (budget > 0 & watchDog < 10)
             {
                 buyIndex = Random.Range(0, items.Count);
+                items[buyIndex].GetComponent<ItemProperties>().InitializeItemProperties();
                 int itemCost = items[buyIndex].GetComponent<ItemProperties>().CostValue;
-                if (budget > itemCost)
+                if (budget >= itemCost)
                 {
                     boughtItems.Add(items[buyIndex]);
                     budget -= itemCost;
+                    watchDog = 0;
                 }
+                else watchDog++;
             }
 
             return boughtItems;

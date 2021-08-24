@@ -7,7 +7,7 @@ namespace Controller
     public class StreetController : Object
     {
         // Manager for steet Spawning, Destroying and Moving
-        public List<Street> Streets { get; set; }= new List<Street>();
+        public List<Street> Streets { get; set; } = new List<Street>();
         private GameObject streetPrefab;
         private int maxStreets;
         private float streetLength;

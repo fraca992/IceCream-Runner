@@ -10,7 +10,7 @@ public class SpawnButton : MonoBehaviour
 
     public void OnButtonPress()
     {
-        FindObjectOfType<LevelManager>().dbSpawn = true;
         FindObjectOfType<LevelManager>().num = streetnum;
+        FindObjectOfType<LevelManager>().dbSpawn = true;        
     }
 }
