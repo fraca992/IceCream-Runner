@@ -29,7 +29,7 @@ namespace Controller
                 Street.CellProperties chosenCell = cells[cellIndex];
 
                 // spawn item, remove it from the list and remove the cell from cells list
-                Instantiate(boughtItems[0], chosenCell.Coordinates, Quaternion.identity);
+                Instantiate(boughtItems[0], chosenCell.Coordinates + new Vector3(0,Tools.GetSize(boughtItems[0],'y')/2,0), Quaternion.identity);
                 boughtItems.RemoveAt(0);
                 cells.RemoveAt(cellIndex);
 

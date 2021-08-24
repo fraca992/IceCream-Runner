@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 3903825180624106263}
   - component: {fileID: 6165216672963604880}
   - component: {fileID: 2035691567600081939}
+  - component: {fileID: 9122538307764271074}
   m_Layer: 0
   m_Name: object5
   m_TagString: Untagged
@@ -110,3 +111,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   costValue: 2
   costDistance: 3
+--- !u!54 &9122538307764271074
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6536700763991762688}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
