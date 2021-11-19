@@ -32,9 +32,11 @@ namespace Controller
             {
                 nextStreetPosition.z = Streets.Count == 0 ? 0 : Streets[Streets.Count - 1].StreetObject.transform.position.z + streetLength;
                 nextStreet = Instantiate(streetPrefab, nextStreetPosition, Quaternion.identity);
-                List<Street.CellProperties> newCells = InitializeCells(nextStreet, xCellNum, cellNumber, startCellValue);
-                Street newStreet = new Street(nextStreet, streetBudget, newCells);
 
+                List<Street.CellProperties> newCells = InitializeCells(nextStreet, xCellNum, cellNumber, startCellValue);
+
+                Street newStreet = new Street(nextStreet, streetBudget, newCells);
+                MoveStreet(1000, newStreet);
                 Streets.Add(newStreet);
 
                 return true;
@@ -60,11 +62,18 @@ namespace Controller
         public void MoveStreets(float streetMovement)
         {
             // Move street segments
-            foreach (Street street in Streets)
-            {
-                street?.StreetObject.transform.Translate(0, 0, -streetMovement);
-                MoveCellCoordinates(-streetMovement, street.Cells);
-            }
+            //foreach (Street street in Streets)
+            //{
+            //    street?.StreetObject.transform.Translate(0, 0, -streetMovement);
+            //    MoveCellCoordinates(-streetMovement, street.Cells);
+            //}
+        }
+
+        public void MoveStreet(float streetMovement, Street street)
+        {
+            Vector3 velocityVector = new Vector3(0, 0, -streetMovement);
+            street.StreetObject.GetComponent<Rigidbody>().AddForce(velocityVector, ForceMode.VelocityChange);
+            MoveCellCoordinates(-streetMovement, street.Cells);
         }
         #endregion
 
