@@ -6,7 +6,11 @@
 
 ### 19 Novembre 2021
 
-francamente, oggi ho solo un'oretta, vorrei fare/rivedere lo spawn e movimento delle strade, con la FIFO.
+Francamente, oggi ho solo un'oretta, vorrei fare/rivedere lo spawn e movimento delle strade, con la FIFO.
+
+E niente, ho ripreso il progetto unity, ripulito dai vecchi script ogni componente, e iniziato a lavorare allo script StreetProperties.cs ma non l'ho finito.
+
+Sono stanco, ho sonno, sono le 11.30
 
 ---
 
