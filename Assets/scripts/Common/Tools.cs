@@ -1,6 +1,6 @@
-﻿using UnityEngine;
+using UnityEngine;
 
-namespace Common2
+namespace Common
 {
     public static class Tools
     {
@@ -14,7 +14,7 @@ namespace Common2
 
             switch (direction)
             {
-                case 'x': 
+                case 'x':
                     length = objRenderer.bounds.size.x;
                     break;
                 case 'y':
@@ -29,17 +29,6 @@ namespace Common2
             }
 
             return length;
-        }
-
-        public static T[] InitializeArray<T>(int length) where T : new()
-        {
-            T[] array = new T[length];
-            for (int i = 0; i < length; ++i)
-            {
-                array[i] = new T();
-            }
-
-            return array;
         }
     }
 }

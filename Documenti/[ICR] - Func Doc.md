@@ -53,7 +53,7 @@
 #### Properties
 
 * A SP must contain its `budget` ---> `Street Properties`
-* A SP must contain its `cells`' data ---> `Cell Properties`, managed by `Street Properties`
+* A SP must contain its `cells`' data (points & coordinates) ---> `Cell Properties`, managed by `Street Properties`
 * An Index, which shows the place of the SP in the `Street FIFO` ---> `Street Properties`
 * Unique `Id`, unchangeable unlike the Index, which identifies each SP ---> `Street Properties`
 
@@ -63,6 +63,7 @@
 - When a SP ends up behind the PC and is not visible anymore, it needs to be destroyed *along all the `items` it contains!* ---> `Level Manager`
 - There must always be N SPs, so when one is destroyed a new one is spawned ---> `Level Manager`
 - the `Street`, made by SPs, must move at a variable speed uniformly ---> `Level Manager`
+- The cell need to compute the Cell `Coordinates` each times they're required ---> `Street Properties`
 
 ---
 
@@ -70,12 +71,8 @@
 
 #### Properties
 
-- `Point` value of the Cell ---> `Cell Properties`, controlled by `Cell Properties`
-- `Coordinates` of the Cell ---> `Cell Properties`, controlled by `Cell Properties`
-
-#### Functions
-
-- The cell need to compute the Cell `Coordinates` each times they're required ---> `Cell Properties`, controlled by `Cell Properties`
+- `Point` value of the Cell ---> `Cell Properties`
+- `Coordinates` of the Cell ---> `Cell Properties`
 
 ---
 

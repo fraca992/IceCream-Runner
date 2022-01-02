@@ -4,6 +4,12 @@
 
 ---
 
+### 24 Novembre 2021
+
+tentiamo di lavorare la mattina... sulla strada
+
+---
+
 ### 19 Novembre 2021
 
 Francamente, oggi ho solo un'oretta, vorrei fare/rivedere lo spawn e movimento delle strade, con la FIFO.

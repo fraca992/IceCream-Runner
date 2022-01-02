@@ -1,26 +1,60 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Common;
 
 public class StreetProperties : MonoBehaviour
 {
-    /*
-* A SP must contain its `cells`' points ---> `Street Properties`
-- A SP must compute its `cells`' coordinates ---> `Street Properties`*/
+    #region Variables
+    // Public Properties
+    public int Budget { get; set; }
+    public int Index { get; set; }
+    public int Id { get; set; }
+    public int NumOfCellsX { get; set; }
+    public int NumOfCellsZ { get; set; }
+    public int CellStartingPoints { get; set; }
 
-    public int StreetBudget { get; set; }
-    public int StreeetIndex { get; set; }
-    public int StreetId { get; set; }
+    public Cell[] StreetCells { get { return GetUpdatedCellCoordinates(StreetCells); } private set { StreetCells = value; } }
 
-    // Start is called before the first frame update
-    void Start()
+    // Other variables
+    // int numOfCells;
+    #endregion
+
+    public StreetProperties(int budget, int index, int id, int xNum = 2, int zNum = 10, int cellPoints = 10)
     {
-
+        Budget = budget;
+        Index = index;
+        Id = id;
+        NumOfCellsX = xNum;
+        NumOfCellsZ = zNum;
+        CellStartingPoints = cellPoints;
     }
 
-    // Update is called once per frame
-    void Update()
+    // Awake is called when the object is created
+    void Awake()
     {
-        Cell[] GetStreetCells(); // Methods that returns an array of the N cells of the street, with updated coordinates.
+        int numOfCells = NumOfCellsX * NumOfCellsZ;
+
+        StreetCells = new Cell[numOfCells];
+        for (int i = 0; i < numOfCells; ++i)
+        {
+            StreetCells[i] = new Cell(CellStartingPoints);
+        }
+    }
+
+    private Cell[] GetUpdatedCellCoordinates(Cell[] cells, int xCellNumber, int zCellNumber) //TODO: finisci qua, bestia
+    {
+        float streetWidth = Tools.GetSize(this.gameObject, 'x');
+        float streetLength = Tools.GetSize(this.gameObject, 'z');
+
+        float cellSize = streetWidth / xCellNumber;
+        if (cellSize != streetLength / zCellNumber) // checking if we get the same size if computing along the z axis
+        {
+            Debug.LogWarning("WARNING: cells are not square");
+        }
+
+        // calcolo coordinate
+
+        return cells;
     }
 }
