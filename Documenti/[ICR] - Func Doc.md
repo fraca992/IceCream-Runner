@@ -98,14 +98,17 @@ The role of this enity is to allow easy and scaleable testing of the game. to al
 
 #### Properties
 
-* 
-
-#### Functions
-
+* #### Functions
 - Modifying velocity of the `level scrolling` ---> TBD
+
 - Starting/stopping `level scrolling` ---> TBD
+
 - Spawning the next `Street Piece` (if no SP is present, one is created under the player) ---> TBD
+
 - Deleting the last (farthest) `Street Piece` ---> TBD
+
 - Triggering the `Item Spawning` algorithm on a specific `Street Piece` ---> TBD
+
 - Starting/stopping authomatic `Item Spawning` algorithm on new SP ---> TBD
+
 - modifying the `Street Budget` of a certain `Street Piece` ---> TBD

@@ -30,5 +30,11 @@ namespace Common
 
             return length;
         }
+
+        static int counterValue = 0;
+        public static int GetNextValue()
+        {
+            return counterValue++;
+        }
     }
 }
