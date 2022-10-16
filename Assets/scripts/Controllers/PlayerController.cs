@@ -22,9 +22,12 @@ public class PlayerController : MonoBehaviour
         float actualVelocity = maxVelocity * Time.deltaTime; // Ensures that even if we change physics update time, it stays constant
         lateralMovement = Input.GetAxis("Horizontal");
 
+
         // Using a temp playerVelocity ensures we can only modify the x component without messing with vertical or forward velocity
         Vector3 playerVelocity = playerRb.velocity;
         playerVelocity.x = lateralMovement * actualVelocity;
         playerRb.velocity = playerVelocity;
+
+
     }
 }

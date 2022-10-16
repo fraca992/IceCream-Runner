@@ -45,7 +45,7 @@ public class LevelManager : MonoBehaviour
         // Spawn street continuously when 1 full street is behind the player
         float lastStreetPositionZ = lvl1Stack.streets[0].transform.position.z;
         float playerPosition = player.transform.position.z;
-        float distanceBuffer = Tools.GetSize(lvl1Stack.streets[0], 'z')*2;
+        float distanceBuffer = Tools.GetSize(lvl1Stack.streets[0], 'z') * 2;
 
         if (lastStreetPositionZ + distanceBuffer < playerPosition)
         {
@@ -56,7 +56,7 @@ public class LevelManager : MonoBehaviour
     private void FixedUpdate()
     {
         // Moving the streets in the stack
-        streetMovement.z = -levelSpeed; //* Time.deltaTime;
+        streetMovement.z = -levelSpeed;
         foreach (GameObject strt in lvl1Stack.streets)
         {
             strt.GetComponent<Rigidbody>().MovePosition(strt.transform.position + streetMovement);

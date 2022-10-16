@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 9082631136419315520}
   - component: {fileID: -5556985999614427359}
   - component: {fileID: 8181709255328984038}
-  - component: {fileID: 5049830004219531431}
   m_Layer: 0
   m_Name: Street
   m_TagString: Untagged
@@ -57,7 +56,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2630171847522182897}
   serializedVersion: 2
-  m_Mass: 0.0000001
+  m_Mass: 10
   m_Drag: 0
   m_AngularDrag: 0
   m_UseGravity: 0
@@ -65,21 +64,6 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 118
   m_CollisionDetection: 1
---- !u!138 &5049830004219531431
-FixedJoint:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2630171847522182897}
-  m_ConnectedBody: {fileID: 0}
-  m_ConnectedArticulationBody: {fileID: 0}
-  m_BreakForce: Infinity
-  m_BreakTorque: Infinity
-  m_EnableCollision: 0
-  m_EnablePreprocessing: 1
-  m_MassScale: 1
-  m_ConnectedMassScale: 1
 --- !u!1 &2808159818330423627
 GameObject:
   m_ObjectHideFlags: 0
