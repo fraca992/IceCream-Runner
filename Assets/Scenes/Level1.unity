@@ -144,7 +144,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6952241839383393267, guid: d6fd4ba32f12b6e42bbb8102408358ad, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.18553436
+      value: 2.95
       objectReference: {fileID: 0}
     - target: {fileID: 6952241839383393267, guid: d6fd4ba32f12b6e42bbb8102408358ad, type: 3}
       propertyPath: m_LocalPosition.y
@@ -296,8 +296,8 @@ Rigidbody:
   m_AngularDrag: 0.05
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 120
+  m_Interpolate: 1
+  m_Constraints: 8
   m_CollisionDetection: 1
 --- !u!114 &210520798
 MonoBehaviour:

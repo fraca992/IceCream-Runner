@@ -26,7 +26,7 @@ public class LevelManager : MonoBehaviour
     [SerializeField]
     private int streetZCellNum = 10;
     [SerializeField]
-    private int streetCellPoints = 10;
+    private int streetCellPoints = 10; //REVIEW: may not be needed, just spawn where available space and limit max items
     #endregion
 
     void Awake()
@@ -42,7 +42,12 @@ public class LevelManager : MonoBehaviour
 
     void Update()
     {
-        // Spawn street continuously when 1 full street is behind the player
+
+    }
+
+    private void FixedUpdate()
+    {
+        // Spawn street continuously when 2 full street is behind the player
         float lastStreetPositionZ = lvl1Stack.streets[0].transform.position.z;
         float playerPosition = player.transform.position.z;
         float distanceBuffer = Tools.GetSize(lvl1Stack.streets[0], 'z') * 2;
@@ -51,15 +56,12 @@ public class LevelManager : MonoBehaviour
         {
             lvl1Stack.SpawnStreet(streetbudget, streetXCellNum, streetZCellNum, streetCellPoints);
         }
-    }
 
-    private void FixedUpdate()
-    {
-        // Moving the streets in the stack
+        //Moving the streets in the stack
         streetMovement.z = -levelSpeed;
         foreach (GameObject strt in lvl1Stack.streets)
         {
-            strt.GetComponent<Rigidbody>().MovePosition(strt.transform.position + streetMovement);
+            strt.GetComponent<Rigidbody>().MovePosition(strt.transform.position + streetMovement); 
         }
     }
 
@@ -83,6 +85,7 @@ public class LevelManager : MonoBehaviour
 
             GameObject nextStreet = Instantiate(Resources.Load<GameObject>(Path), spawnCoordinates, Quaternion.identity);
             nextStreet.GetComponent<StreetProperties>().InitializeStreetProperties(budget, Tools.GetNextValue(), xCellNum, zCellNum, cellPoints);
+
             InsertStreetIntoStack(nextStreet);
 
             return nextStreet;
@@ -91,7 +94,7 @@ public class LevelManager : MonoBehaviour
         private Vector3 GetNextStreetCoordinates()
         {
             Vector3 nextCoords = Vector3.zero;
-            float streetLength = StackCount == 0 ? 0 : Tools.GetSize(streets[StackCount - 1], 'z');
+            float streetLength = StackCount == 0 ? 0 : Tools.GetSize(streets[StackCount - 1], 'z', 'r');
 
             nextCoords.z = StackCount == 0 ? 0 : streets[StackCount - 1].transform.position.z + streetLength;
 
