@@ -4,18 +4,13 @@ namespace Common
 {
     public class Cell
     {
-        public int Points { get; set; }
+        public bool isOccupied { get; set; }
         public Vector3 Coordinates { get; set; }
 
-        public Cell(int p)
+        public Cell(Vector3 c)
         {
-            Points = p;
-        }
-
-        public Cell(int p, Vector3 c)
-        {
-            Points = p;
             Coordinates = c;
+            isOccupied = false;
         }
     } 
 }
