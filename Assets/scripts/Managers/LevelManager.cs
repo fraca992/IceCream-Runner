@@ -43,7 +43,7 @@ public class LevelManager : MonoBehaviour
 
     private void FixedUpdate()
     {
-        // Spawn street continuously when 2 full street is behind the player
+        // Spawn ground segments continuously
         float lastStreetPositionZ = groundStack.groundList[0].transform.position.z;
         float playerPosition = player.transform.position.z;
         float distanceBuffer = Tools.GetSize(groundStack.groundList[0], 'z') * 2;
@@ -53,7 +53,7 @@ public class LevelManager : MonoBehaviour
             groundStack.SpawnGround(groundBudget, streetXCellNum, streetZCellNum);
         }
 
-        //Moving the streets in the stack
+        //Moving the ground segments in the stack
         streetMovement.z = -levelSpeed;
         foreach (GameObject strt in groundStack.groundList)
         {
@@ -61,6 +61,8 @@ public class LevelManager : MonoBehaviour
         }
     }
 
+    // Class describing the ground segments Stack. Structured as a FIFO.
+    // Also implements all the Stack functionalities like spawning new ground, trigger Item/Obstacle placement etc.
     public class GroundStack
     {
         public int StackSize { get; private set; }
@@ -72,6 +74,7 @@ public class LevelManager : MonoBehaviour
 
         private ItemSpawner obstacleSpawner;
 
+        // Constructor
         public GroundStack(string itmPath, string obsPath, int size, int maxObs)
         {
             StackSize = size;
@@ -81,6 +84,7 @@ public class LevelManager : MonoBehaviour
             obstacleSpawner = new ItemSpawner(obsPath);
         }
 
+        // Spawns a new ground segment ahead of the player
         public GameObject SpawnGround(int totalBudget, int xCellNum, int zCellNum)
         {
             Vector3 spawnCoordinates = GetNextGroundCoordinates();
@@ -96,6 +100,7 @@ public class LevelManager : MonoBehaviour
             return newGround;
         }
 
+        // Computes coordinates for spawning a new ground segment
         private Vector3 GetNextGroundCoordinates()
         {
             Vector3 nextCoords = Vector3.zero;
@@ -105,6 +110,8 @@ public class LevelManager : MonoBehaviour
 
             return nextCoords;
         }
+
+        // Inserts new segment into the Stack
         private void InsertGroundIntoStack(GameObject ground)
         {
             // Before inserting a new street segment into the stack, we remove the oldest one (index = 0), if it would exceed the stack's max size
@@ -118,6 +125,10 @@ public class LevelManager : MonoBehaviour
         }
     }
 
+
+    // Class describing an Item spawner. This object manages the lists of Items (obstacles, power-ups, etc.), selects new items once a new ground segment spawns
+    // and places them on the segment.
+    // TODO: for now the item placement is completely random. implement an algorithm to avoid path blocking and unbalanced positioning!
     private class ItemSpawner
     {
         public string ItemPath { private get; set; }
@@ -146,14 +157,14 @@ public class LevelManager : MonoBehaviour
             }
         }
 
-        // this function fills selectedItems
+        // this function fills selectedItems with the Items that will be placed on the segment.
         public List<GameObject> FillItemList(int maxItems, int totBudget)
         {
             int budget = totBudget;
 
             selectedItems.Clear();
 
-            // we add items to the list as long as we don't reach maxItems or the busget is too low to afford even the cheaper item
+            // we add items to the list as long as we don't reach maxItems or the budget is too low to afford even the cheaper item
             while (selectedItems.Count <= maxItems && budget >= minCost)
             {
                 int rndIndex = Random.Range(0, allItems.Count);
@@ -167,12 +178,12 @@ public class LevelManager : MonoBehaviour
             return selectedItems;
         }
 
-        // this function places all the selected Items on the Ground piece
+        // this function places all the selected Items on the Ground segment
         public void PlaceItems(GameObject ground, List<GameObject> items = null)
         {
             if (items == null) items = selectedItems;
 
-            List<Cell> cells = ground.GetComponent<GroundProperties>().GetGroundCells();
+            List<CellProperties> cells = ground.GetComponent<GroundProperties>().GetGroundCells();
 
             int rndCellIndex;
             int rndItemIndex;
@@ -184,9 +195,9 @@ public class LevelManager : MonoBehaviour
                 rndItemIndex = Random.Range(0, items.Count);
 
                 GameObject itm = selectedItems[rndItemIndex];
-                Cell cl = cells[rndCellIndex];
+                CellProperties cl = cells[rndCellIndex];
 
-                // TODO: Must account for different size/shape of items
+                // TODO: Must eventually account for different size/shape of items
                 if (cl.isOccupied == false)
                 {
                     GameObject newItem = Instantiate(itm, cl.Coordinates, Quaternion.identity);
@@ -195,7 +206,6 @@ public class LevelManager : MonoBehaviour
 
                 }
             }
-
             return;
         }
     }

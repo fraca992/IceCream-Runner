@@ -1,7 +1,4 @@
-//using System.Collections;
-//using System.Collections.Generic;
 using UnityEngine;
-//using Common;
 
 public class ObstacleProperties : MonoBehaviour
 {
@@ -14,7 +11,7 @@ public class ObstacleProperties : MonoBehaviour
     public int[] Size { get { return _size; } }
 
     [SerializeField]
-    private bool _isEditing = false;
+    private bool _isEditing = false; // When enabled, shows a Gizmo that visualizes the boundaries of Size.
 
 
     //TODO: create and store different effects

@@ -1,4 +1,3 @@
- using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Common;
@@ -6,15 +5,15 @@ using Common;
 public class GroundProperties : MonoBehaviour
 {
     #region Variables
-    // Public Properties
     public int Budget { get; set; }
     public int Id { get; set; }
-    public int NumOfCellsX { get; set; }
-    public int NumOfCellsZ { get; set; }
+    public int NumOfCellsX { get; set; } // Number of cells along the X axis of the Sidewalk
+    public int NumOfCellsZ { get; set; } // Number of cells along the Z axis of the Sidewalk
 
-    private List<Cell> groundCells = new List<Cell>();
+    private List<CellProperties> groundCells = new List<CellProperties>();
     #endregion
 
+    // Constructor
     public void InitializeGroundProperties (int budget, int id, int xNum, int zNum)
     {
         Budget = budget;
@@ -27,17 +26,18 @@ public class GroundProperties : MonoBehaviour
 
         for (int i = 0; i < numOfCells; ++i)
         {
-            groundCells.Add(new Cell(this.transform.position));
+            groundCells.Add(new CellProperties(this.transform.position));
         }
     }
 
-
-    public List<Cell> GetGroundCells()
+    // used to access the position of the cells
+    public List<CellProperties> GetGroundCells()
     {
         return GetUpdatedCellCoordinates(groundCells, NumOfCellsX, NumOfCellsZ);
     }
 
-    private List<Cell> GetUpdatedCellCoordinates(List<Cell> cells, int xCellNumber, int zCellNumber)
+    // Computes an updated position for the cells
+    private List<CellProperties> GetUpdatedCellCoordinates(List<CellProperties> cells, int xCellNumber, int zCellNumber)
     {
         float sidewalkWidth = Tools.GetSize(this.transform.GetChild(1).gameObject, 'x');
         float sidewalkLength = Tools.GetSize(this.transform.GetChild(1).gameObject, 'z');
