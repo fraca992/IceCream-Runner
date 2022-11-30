@@ -15,11 +15,9 @@ public class LevelManager : MonoBehaviour
     #region Street Variables
     [SerializeField]
     private int stackSize = 10;
-    private GroundStack groundStack;
-    private GameObject nextGround;
+    public GroundStack groundStack;
     private string groundPrefabPath = "Grounds/Street";
     private string obstacleFolderPath = "Obstacles";
-    private Vector3 streetSpawnCoordinates = Vector3.zero;
     [SerializeField]
     private int groundBudget = 100;
     [SerializeField]
@@ -193,7 +191,8 @@ public class LevelManager : MonoBehaviour
                 {
                     GameObject newItem = Instantiate(itm, cl.Coordinates, Quaternion.identity);
                     cells.RemoveAt(rndCellIndex);
-                    items.RemoveAt(rndItemIndex);                    
+                    items.RemoveAt(rndItemIndex);
+
                 }
             }
 

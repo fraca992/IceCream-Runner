@@ -6,7 +6,7 @@ namespace Common
     {
         public static float GetSize(GameObject obj, char direction, char useColliderorRenderer = 'r')
         {
-            //returns size along the chosen direction of a GameObject using its MeshRenderer
+            //returns size along the chosen direction of a GameObject using its MeshRenderer or Box collider
             BoxCollider objCollider;
             MeshRenderer objRenderer;
 
