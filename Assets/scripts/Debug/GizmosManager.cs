@@ -15,10 +15,10 @@ public class GizmosManager : MonoBehaviour
         
         if (thisStack != null)
         {
-            foreach (var strt in thisStack.groundList)
+            foreach (var seg in thisStack.groundList)
             {
                 int i = 0;
-                foreach (var cell in strt.GetComponent<GroundProperties>().GetGroundCells())
+                foreach (var cell in seg.ground.GetComponent<GroundProperties>().GetGroundCells())
                 {
                     Gizmos.color = Color.red;
                     Gizmos.DrawWireCube(cell.Coordinates, new Vector3(5,5,5));

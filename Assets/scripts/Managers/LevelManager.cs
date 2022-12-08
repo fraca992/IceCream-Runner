@@ -37,28 +37,35 @@ public class LevelManager : MonoBehaviour
         groundStack = new GroundStack(groundPrefabPath, obstacleFolderPath, stackSize, maxObstacles);
         for (int i = 0; i < stackSize; i++)
         {
-            groundStack.SpawnGround(groundBudget, streetXCellNum, streetZCellNum);
+            groundStack.SpawnSegment(groundBudget, streetXCellNum, streetZCellNum);
         }
     }
 
     private void FixedUpdate()
     {
         // Spawn ground segments continuously
-        float lastStreetPositionZ = groundStack.groundList[0].transform.position.z;
+        float lastStreetPositionZ = groundStack.groundList[0].ground.transform.position.z;
         float playerPosition = player.transform.position.z;
-        float distanceBuffer = Tools.GetSize(groundStack.groundList[0], 'z') * 2;
+        float distanceBuffer = Tools.GetSize(groundStack.groundList[0].ground, 'z') * 2;
 
         if (lastStreetPositionZ + distanceBuffer < playerPosition)
         {
-            groundStack.SpawnGround(groundBudget, streetXCellNum, streetZCellNum);
+            groundStack.SpawnSegment(groundBudget, streetXCellNum, streetZCellNum);
         }
 
         //Moving the ground segments in the stack
         streetMovement.z = -levelSpeed;
-        foreach (GameObject strt in groundStack.groundList)
+        foreach (Segment seg in groundStack.groundList)
         {
-            strt.GetComponent<Rigidbody>().MovePosition(strt.transform.position + streetMovement); 
+            seg.ground.GetComponent<Rigidbody>().MovePosition(seg.ground.transform.position + streetMovement); 
         }
+    }
+
+    // Segment struct, each one holds the ground Object as well as Obstacles and Items etc.
+    public struct Segment
+    {
+        public GameObject ground;
+        public List<GameObject> obstacles;
     }
 
     // Class describing the ground segments Stack. Structured as a FIFO.
@@ -70,9 +77,9 @@ public class LevelManager : MonoBehaviour
         public int StackCount { get { return groundList.Count; } }
         public string GroundPath { private get; set; }
 
-        public List<GameObject> groundList = new List<GameObject>();
-
         private ItemSpawner obstacleSpawner;
+
+        public List<Segment> groundList = new List<Segment>();
 
         // Constructor
         public GroundStack(string itmPath, string obsPath, int size, int maxObs)
@@ -85,43 +92,56 @@ public class LevelManager : MonoBehaviour
         }
 
         // Spawns a new ground segment ahead of the player
-        public GameObject SpawnGround(int totalBudget, int xCellNum, int zCellNum)
+        public void SpawnSegment(int totalBudget, int xCellNum, int zCellNum)
         {
             Vector3 spawnCoordinates = GetNextGroundCoordinates();
 
+            //spawning ground
             GameObject newGround = Instantiate(Resources.Load<GameObject>(GroundPath), spawnCoordinates, Quaternion.identity);
             newGround.GetComponent<GroundProperties>().InitializeGroundProperties(totalBudget, Tools.GetNextValue(), xCellNum, zCellNum);
-            InsertGroundIntoStack(newGround);
+            
 
             // Spawning obstacles
-            obstacleSpawner.FillItemList(maxObstacles, totalBudget);
+            List<GameObject> newObstacles = obstacleSpawner.FillItemList(maxObstacles, totalBudget);
             obstacleSpawner.PlaceItems(newGround);
 
-            return newGround;
+            // creating the new Segment
+            Segment newSegment = new Segment();
+            newSegment.ground = newGround;
+            newSegment.obstacles = newObstacles;
+
+            InsertSegmentIntoStack(newSegment);
+            return;
         }
 
         // Computes coordinates for spawning a new ground segment
         private Vector3 GetNextGroundCoordinates()
         {
             Vector3 nextCoords = Vector3.zero;
-            float streetLength = StackCount == 0 ? 0 : Tools.GetSize(groundList[StackCount - 1], 'z', 'r');
+            float streetLength = StackCount == 0 ? 0 : Tools.GetSize(groundList[StackCount - 1].ground, 'z', 'r');
 
-            nextCoords.z = StackCount == 0 ? 0 : groundList[StackCount - 1].transform.position.z + streetLength;
+            nextCoords.z = StackCount == 0 ? 0 : groundList[StackCount - 1].ground.transform.position.z + streetLength;
 
             return nextCoords;
         }
 
         // Inserts new segment into the Stack
-        private void InsertGroundIntoStack(GameObject ground)
+        private void InsertSegmentIntoStack(Segment seg)
         {
             // Before inserting a new street segment into the stack, we remove the oldest one (index = 0), if it would exceed the stack's max size
             if (groundList.Count == StackSize)
             {
-                GameObject.Destroy(groundList[0]);
+                foreach (var obs in groundList[0].obstacles)
+                {
+                    GameObject.Destroy(obs);
+                }
+
+                GameObject.Destroy(groundList[0].ground);
+
                 groundList.RemoveAt(0);
             }
 
-            groundList.Add(ground);
+            groundList.Add(seg);
         }
     }
 
