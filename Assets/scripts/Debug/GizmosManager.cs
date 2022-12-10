@@ -11,11 +11,11 @@ public class GizmosManager : MonoBehaviour
         if (!isDebugging) return;
 
         // drawing the boundaries and number of cells on all ground segments
-        LevelManager.GroundStack thisStack = this.GetComponent<LevelManager>().groundStack;
+        LevelManager.SegmentSpawner thisStack = this.GetComponent<LevelManager>().groundStack;
         
         if (thisStack != null)
         {
-            foreach (var seg in thisStack.groundList)
+            foreach (var seg in thisStack.groundStack)
             {
                 int i = 0;
                 foreach (var cell in seg.ground.GetComponent<GroundProperties>().GetGroundCells())
