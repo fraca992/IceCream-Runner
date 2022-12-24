@@ -18,12 +18,12 @@ namespace Common
         {
             public int StackSize { get; private set; }
             public int maxObstacles { get; private set; }
-            public int StackCount { get { return groundStack.Count; } }
+            public int StackCount { get { return segmentStack.Count; } }
             public string GroundPath { private get; set; }
 
             private ItemSpawner obstacleSpawner;
 
-            public List<Segment> groundStack = new List<Segment>();
+            public List<Segment> segmentStack = new List<Segment>();
 
             // Constructor
             public SegmentSpawner(string itmPath, string obsPath, int size, int maxObs)
@@ -44,10 +44,9 @@ namespace Common
                 GameObject newGround = Instantiate(Resources.Load<GameObject>(GroundPath), spawnCoordinates, Quaternion.identity);
                 newGround.GetComponent<GroundProperties>().InitializeGroundProperties(totalBudget, Tools.GetNextValue(), xCellNum, zCellNum);
 
-
                 // Spawning obstacles
-                List<GameObject> newObstacles = obstacleSpawner.FillItemList(maxObstacles, totalBudget);
-                obstacleSpawner.PlaceItems(newGround);
+                obstacleSpawner.FillItemList(maxObstacles, totalBudget);
+                List<GameObject> newObstacles = obstacleSpawner.PlaceItems(newGround);
 
                 // creating the new Segment
                 Segment newSegment = new Segment();
@@ -62,9 +61,9 @@ namespace Common
             private Vector3 GetNextGroundCoordinates()
             {
                 Vector3 nextCoords = Vector3.zero;
-                float streetLength = StackCount == 0 ? 0 : Tools.GetSize(groundStack[StackCount - 1].ground, 'z', 'r');
+                float streetLength = StackCount == 0 ? 0 : Tools.GetSize(segmentStack[StackCount - 1].ground, 'z', 'r');
 
-                nextCoords.z = StackCount == 0 ? 0 : groundStack[StackCount - 1].ground.transform.position.z + streetLength;
+                nextCoords.z = StackCount == 0 ? 0 : segmentStack[StackCount - 1].ground.transform.position.z + streetLength;
 
                 return nextCoords;
             }
@@ -73,19 +72,19 @@ namespace Common
             private void InsertSegmentIntoStack(Segment seg)
             {
                 // Before inserting a new street segment into the stack, we remove the oldest one (index = 0), if it would exceed the stack's max size
-                if (groundStack.Count == StackSize)
+                if (segmentStack.Count == StackSize)
                 {
-                    foreach (var obs in groundStack[0].obstacles)
+                    foreach (var obs in segmentStack[0].obstacles)
                     {
                         GameObject.Destroy(obs);
                     }
 
-                    GameObject.Destroy(groundStack[0].ground);
+                    GameObject.Destroy(segmentStack[0].ground);
 
-                    groundStack.RemoveAt(0);
+                    segmentStack.RemoveAt(0);
                 }
 
-                groundStack.Add(seg);
+                segmentStack.Add(seg);
             }
         }
 
@@ -96,8 +95,9 @@ namespace Common
         private class ItemSpawner
         {
             public string ItemPath { private get; set; }
-            public List<GameObject> selectedItems = new List<GameObject>();
             private List<GameObject> allItems = new List<GameObject>();
+            private List<GameObject> selectedItems = new List<GameObject>();
+            public List<GameObject> spawnedItems = new List<GameObject>();
             private int minCost;
 
             // Constructor
@@ -105,9 +105,7 @@ namespace Common
             {
                 ItemPath = path;
 
-                GameObject[] testtest2 = Resources.LoadAll<GameObject>(ItemPath);
-
-                allItems.AddRange(testtest2);
+                allItems.AddRange(Resources.LoadAll<GameObject>(ItemPath));
 
                 //minCost of allItems is found to ensure we don't get stuck while selecting items if remaining budget is too low
                 minCost = allItems[0].GetComponent<ObstacleProperties>().Cost;
@@ -122,14 +120,14 @@ namespace Common
             }
 
             // this function fills selectedItems with the Items that will be placed on the segment.
-            public List<GameObject> FillItemList(int maxItems, int totBudget)
+            public void FillItemList(int maxItems, int totBudget)
             {
                 int budget = totBudget;
 
                 selectedItems.Clear();
 
                 // we add items to the list as long as we don't reach maxItems or the budget is too low to afford even the cheaper item
-                while (selectedItems.Count <= maxItems && budget >= minCost)
+                while (selectedItems.Count < maxItems && budget >= minCost)
                 {
                     int rndIndex = Random.Range(0, allItems.Count);
                     bool canAfford = budget > allItems[rndIndex].GetComponent<ObstacleProperties>().Cost;
@@ -137,14 +135,17 @@ namespace Common
                     if (canAfford)
                     {
                         selectedItems.Add(allItems[rndIndex]);
+                        budget -= allItems[rndIndex].GetComponent<ObstacleProperties>().Cost;
                     }
                 }
-                return selectedItems;
+                return;
             }
 
             // this function places all the selected Items on the Ground segment
-            public void PlaceItems(GameObject ground, List<GameObject> items = null)
+            public List<GameObject> PlaceItems(GameObject ground, List<GameObject> items = null)
             {
+                spawnedItems.Clear();
+
                 if (items == null) items = selectedItems;
 
                 List<CellProperties> cells = ground.GetComponent<GroundProperties>().GetGroundCells();
@@ -164,13 +165,12 @@ namespace Common
                     // TODO: Must eventually account for different size/shape of items
                     if (cl.isOccupied == false)
                     {
-                        GameObject newItem = Instantiate(itm, cl.Coordinates, Quaternion.identity);
+                        spawnedItems.Add(Instantiate(itm, cl.Coordinates, Quaternion.identity));
                         cells.RemoveAt(rndCellIndex);
                         items.RemoveAt(rndItemIndex);
-
                     }
                 }
-                return;
+                return spawnedItems;
             }
         }
     } 

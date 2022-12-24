@@ -1,6 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Common;
 
 public class GizmosManager : MonoBehaviour
 {
@@ -10,67 +10,67 @@ public class GizmosManager : MonoBehaviour
     {
         if (!isDebugging) return;
 
-        // drawing the boundaries and number of cells on all ground segments
-        LevelManager.SegmentSpawner thisStack = this.GetComponent<LevelManager>().groundStack;
-        
-        if (thisStack != null)
+        List<SegmentClasses.Segment> segments = this.GetComponent<LevelManager>().lvl1Spawner.segmentStack;
+        if (segments == null) return; 
+
+        HighlightCells(segments);
+        HighlightGroundandObstacles();
+    }
+
+    // drawing the boundaries and number of cells on all ground segments
+    private void HighlightCells(List<SegmentClasses.Segment> segments)
+    {
+        int j = 0;
+        foreach (var seg in segments)
         {
-            foreach (var seg in thisStack.groundStack)
+            // highlighting segment cells and number of segment (j) and cell (i)
+            int i = 0;
+            foreach (var cell in seg.ground.GetComponent<GroundProperties>().GetGroundCells())
             {
-                int i = 0;
-                foreach (var cell in seg.ground.GetComponent<GroundProperties>().GetGroundCells())
+                float cellSize = seg.ground.GetComponent<GroundProperties>().GetGroundCells()[0].Size;
+
+                Gizmos.color = Color.red;
+                Gizmos.DrawWireCube(cell.Coordinates, new Vector3(cellSize, cellSize, cellSize));
+                Tools.drawString($"{j},{i}", cell.Coordinates + 1.5f * Vector3.up, 0, 0, Color.red);
+                i++;
+            }
+            j++;
+        }
+    }
+
+    private void HighlightGroundandObstacles()
+    {
+        List<SegmentClasses.Segment> segments = this.GetComponent<LevelManager>().lvl1Spawner.segmentStack;
+        float cellSize = segments[0].ground.GetComponent<GroundProperties>().GetGroundCells()[0].Size;
+
+        if (segments != null)
+        {
+            // highlight thisStack[0] ground and items
+            Vector3 groundPos = segments.segmentStack[0].ground.transform.position;
+
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawLine(groundPos + Vector3.right, groundPos - Vector3.right);
+            Gizmos.DrawLine(groundPos + Vector3.up, groundPos - Vector3.up);
+
+            
+
+
+
+            foreach (var seg in segments)
+            {
+                foreach (var obs in seg.obstacles)
                 {
-                    Gizmos.color = Color.red;
-                    Gizmos.DrawWireCube(cell.Coordinates, new Vector3(5,5,5));
-                    drawString(i.ToString(), cell.Coordinates + 1.5f * Vector3.up,0,0,Color.red);
-                    i++;
+                    Vector3 itemPos = obs.transform.position;
+
+                    Gizmos.color = Color.cyan;
+                    Gizmos.DrawLine(itemPos + Vector3.right, itemPos - Vector3.right);
+                    Gizmos.DrawLine(itemPos + Vector3.up, itemPos - Vector3.up);
                 }
             }
         }
         else
         {
-            thisStack = this.GetComponent<LevelManager>().groundStack;
+            segments = this.GetComponent<LevelManager>().lvl1Spawner.segmentStack;
         }
     }
-
-    static public void drawString(string text, Vector3 worldPos, float oX = 0, float oY = 0, Color? colour = null)
-    {
-
-#if UNITY_EDITOR
-        UnityEditor.Handles.BeginGUI();
-
-        var restoreColor = GUI.color;
-
-        if (colour.HasValue) GUI.color = colour.Value;
-        var view = UnityEditor.SceneView.currentDrawingSceneView;
-        Vector3 screenPos = view.camera.WorldToScreenPoint(worldPos);
-
-        if (screenPos.y < 0 || screenPos.y > Screen.height || screenPos.x < 0 || screenPos.x > Screen.width || screenPos.z < 0)
-        {
-            GUI.color = restoreColor;
-            UnityEditor.Handles.EndGUI();
-            return;
-        }
-
-        UnityEditor.Handles.Label(TransformByPixel(worldPos, oX, oY), text);
-
-        GUI.color = restoreColor;
-        UnityEditor.Handles.EndGUI();
-#endif
-    }
-
-    static Vector3 TransformByPixel(Vector3 position, float x, float y)
-    {
-        return TransformByPixel(position, new Vector3(x, y));
-    }
-
-    static Vector3 TransformByPixel(Vector3 position, Vector3 translateBy)
-    {
-        Camera cam = UnityEditor.SceneView.currentDrawingSceneView.camera;
-        if (cam)
-            return cam.ScreenToWorldPoint(cam.WorldToScreenPoint(position) + translateBy);
-        else
-            return position;
-    }
-
 }

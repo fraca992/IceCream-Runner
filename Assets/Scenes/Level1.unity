@@ -474,7 +474,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levelSpeed: 0.2
-  stackSize: 10
+  stackSize: 2
   groundBudget: 100
   maxObstacles: 8
   streetXCellNum: 2
@@ -506,4 +506,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9dbbb647c76cd040a4679ba80b162aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isDebugging: 0
+  isDebugging: 1

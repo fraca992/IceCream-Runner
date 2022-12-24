@@ -4,9 +4,9 @@ namespace Common
 {
     public static class Tools
     {
+        // Gets size of a GameObject along the chosen direction of a GameObject using its MeshRenderer or Box collider
         public static float GetSize(GameObject obj, char direction, char useColliderorRenderer = 'r')
         {
-            //returns size along the chosen direction of a GameObject using its MeshRenderer or Box collider
             BoxCollider objCollider;
             MeshRenderer objRenderer;
 
@@ -48,10 +48,52 @@ namespace Common
             }
         }
 
+        // Static counter for Street ID
         static int counterValue = 0;
         public static int GetNextValue()
         {
             return counterValue++;
+        }
+
+        // Methods for drawing text gizoms
+        static public void drawString(string text, Vector3 worldPos, float oX = 0, float oY = 0, Color? colour = null)
+        {
+
+            #if UNITY_EDITOR
+            UnityEditor.Handles.BeginGUI();
+
+            var restoreColor = GUI.color;
+
+            if (colour.HasValue) GUI.color = colour.Value;
+            var view = UnityEditor.SceneView.currentDrawingSceneView;
+            Vector3 screenPos = view.camera.WorldToScreenPoint(worldPos);
+
+            if (screenPos.y < 0 || screenPos.y > Screen.height || screenPos.x < 0 || screenPos.x > Screen.width || screenPos.z < 0)
+            {
+                GUI.color = restoreColor;
+                UnityEditor.Handles.EndGUI();
+                return;
+            }
+
+            UnityEditor.Handles.Label(TransformByPixel(worldPos, oX, oY), text);
+
+            GUI.color = restoreColor;
+            UnityEditor.Handles.EndGUI();
+            #endif
+        }
+
+        static Vector3 TransformByPixel(Vector3 position, float x, float y)
+        {
+            return TransformByPixel(position, new Vector3(x, y));
+        }
+
+        static Vector3 TransformByPixel(Vector3 position, Vector3 translateBy)
+        {
+            Camera cam = UnityEditor.SceneView.currentDrawingSceneView.camera;
+            if (cam)
+                return cam.ScreenToWorldPoint(cam.WorldToScreenPoint(position) + translateBy);
+            else
+                return position;
         }
     }
 }

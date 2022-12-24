@@ -8,14 +8,14 @@ public class LevelManager : MonoBehaviour
     #region General Variables
     [SerializeField]
     private float levelSpeed = 10f;
-    private Vector3 streetMovement = Vector3.zero;
+    private Vector3 segmentMovement = Vector3.zero;
     private GameObject player;
     #endregion
 
     #region Street Variables
     [SerializeField]
     private int stackSize = 10;
-    public SegmentClasses.SegmentSpawner groundStack;
+    public SegmentClasses.SegmentSpawner lvl1Spawner;
     private string groundPrefabPath = "Grounds/Street";
     private string obstacleFolderPath = "Obstacles";
     [SerializeField]
@@ -33,31 +33,38 @@ public class LevelManager : MonoBehaviour
     {
         player = GameObject.Find("Player");
 
-        // Spawn initial ground segments
-        groundStack = new SegmentClasses.SegmentSpawner(groundPrefabPath, obstacleFolderPath, stackSize, maxObstacles);
+        // Spawn initial segments
+        lvl1Spawner = new SegmentClasses.SegmentSpawner(groundPrefabPath, obstacleFolderPath, stackSize, maxObstacles);
         for (int i = 0; i < stackSize; i++)
         {
-            groundStack.SpawnSegment(groundBudget, streetXCellNum, streetZCellNum);
+            lvl1Spawner.SpawnSegment(groundBudget, streetXCellNum, streetZCellNum);
         }
     }
 
     private void FixedUpdate()
     {
-        // Spawn ground segments continuously
-        float lastStreetPositionZ = groundStack.groundStack[0].ground.transform.position.z;
+        // Spawn segments continuously
+        float lastStreetPositionZ = lvl1Spawner.segmentStack[0].ground.transform.position.z;
         float playerPosition = player.transform.position.z;
-        float distanceBuffer = Tools.GetSize(groundStack.groundStack[0].ground, 'z') * 2;
+        float distanceBuffer = Tools.GetSize(lvl1Spawner.segmentStack[0].ground, 'z') * 2;
 
         if (lastStreetPositionZ + distanceBuffer < playerPosition)
         {
-            groundStack.SpawnSegment(groundBudget, streetXCellNum, streetZCellNum);
+            lvl1Spawner.SpawnSegment(groundBudget, streetXCellNum, streetZCellNum);
         }
 
         //Moving the ground segments in the stack
-        streetMovement.z = -levelSpeed;
-        foreach (SegmentClasses.Segment seg in groundStack.groundStack)
+        segmentMovement.z = -levelSpeed;
+        foreach (SegmentClasses.Segment seg in lvl1Spawner.segmentStack) // TODO: could be a function
         {
-            seg.ground.GetComponent<Rigidbody>().MovePosition(seg.ground.transform.position + streetMovement); 
+            //moving ground
+            seg.ground.GetComponent<Rigidbody>().MovePosition(seg.ground.transform.position + segmentMovement);
+
+            //moving obstacles
+            //foreach (GameObject obs in seg.obstacles)
+            //{
+            //    obs.GetComponent<Rigidbody>().velocity = seg.ground.GetComponent<Rigidbody>().velocity; //MovePosition(seg.ground.transform.position + segmentMovement);
+            //}
         }
     }
 }
