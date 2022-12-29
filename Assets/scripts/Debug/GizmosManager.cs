@@ -10,7 +10,7 @@ public class GizmosManager : MonoBehaviour
     {
         if (!isDebugging) return;
 
-        List<SegmentClasses.Segment> segments = this.GetComponent<LevelManager>().lvl1Spawner.segmentStack;
+        List<Segment.Segment> segments = this.GetComponent<LevelManager>().lvl1Spawner.segmentStack;
         if (segments == null) return; 
 
         HighlightCells(segments);
@@ -18,7 +18,7 @@ public class GizmosManager : MonoBehaviour
     }
 
     // drawing the boundaries and number of cells on all ground segments
-    private void HighlightCells(List<SegmentClasses.Segment> segments)
+    private void HighlightCells(List<Segment.Segment> segments)
     {
         int j = 0;
         foreach (var seg in segments)
@@ -40,7 +40,7 @@ public class GizmosManager : MonoBehaviour
 
     private void HighlightGroundandObstacles()
     {
-        List<SegmentClasses.Segment> segments = this.GetComponent<LevelManager>().lvl1Spawner.segmentStack;
+        List<Segment.Segment> segments = this.GetComponent<LevelManager>().lvl1Spawner.segmentStack;
         float cellSize = segments[0].ground.GetComponent<GroundProperties>().GetGroundCells()[0].Size;
 
         if (segments != null)

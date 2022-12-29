@@ -1,16 +1,15 @@
+using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace Common
 {
-    public class SegmentClasses : MonoBehaviour
+    public class Segment : MonoBehaviour
     {
         // Segment struct, each one holds the ground Object as well as Obstacles and Items etc.
-        public struct Segment
-        {
             public GameObject ground;
             public List<GameObject> obstacles;
-        }
 
         // Class describing the ground segments Stack. Structured as a FIFO.
         // Also implements all the Stack functionalities like spawning new ground, trigger Item/Obstacle placement etc.
@@ -172,6 +171,68 @@ namespace Common
                 }
                 return spawnedItems;
             }
+        }
+
+
+
+
+        // used to access the position of the cells
+        public List<CellProperties> GetGroundCells()
+        {
+            return GetUpdatedCellCoordinates(groundCells, NumOfCellsX, NumOfCellsZ, groundCells[0].Size);
+        }
+
+        // Computes an updated position for the cells
+        private List<CellProperties> GetUpdatedCellCoordinates(List<CellProperties> cells, int xCellNumber, int zCellNumber, float cellSize)
+        {
+            // compute cell coordinates
+            int zIndex = 0;
+            int xIndex = 0;
+            Vector3 cellCoordinatesDelta = new Vector3(0f, 0f, 0f);
+
+            for (int i = 0; i < cells.Count / 2; i++)
+            {
+                zIndex = i / xCellNumber;
+                xIndex = i - zIndex * xCellNumber;
+
+                cellCoordinatesDelta.x = (2 * xIndex + 1) * cellSize / 2f - sidewalkWidth / 2f;
+                cellCoordinatesDelta.y = sidewalkHeight;
+                cellCoordinatesDelta.z = sidewalkLength / 2f - (2 * zIndex + 1) * cellSize / 2f;
+
+                // the final cell coordinates
+                cells[i].Coordinates = this.transform.GetChild(1).position + cellCoordinatesDelta;
+            }
+            for (int i = cells.Count / 2; i < cells.Count; i++)
+            {
+                int ii = i - cells.Count / 2;
+                zIndex = ii / xCellNumber;
+                xIndex = ii - zIndex * xCellNumber;
+
+                cellCoordinatesDelta.x = (2 * xIndex + 1) * cellSize / 2f - sidewalkWidth / 2f;
+                cellCoordinatesDelta.y = sidewalkHeight;
+                cellCoordinatesDelta.z = sidewalkLength / 2f - (2 * zIndex + 1) * cellSize / 2f;
+
+                // the final cell coordinates
+                cells[i].Coordinates = this.transform.GetChild(2).position + cellCoordinatesDelta;
+            }
+
+            return cells;
+        }
+
+        //
+        float cellSize = SidewalkWidth / NumOfCellsX;
+        int numOfCells = 2 * (xNum * zNum);
+
+        // checking if we get the same size if computing along the z axis
+        if (cellSize != SidewalkLength / NumOfCellsZ)
+        {
+            Debug.LogWarning("WARNING: Ground size doesn't allow for square cells. cells MUST be square!" + $" width: {sidewalkWidth} x length: {sidewalkLength}, cellsize: {cellSize} x {sidewalkLength / NumOfCellsZ}");
+        }
+
+        // instantiating cells in Cell Array with starting points
+        for (int i = 0; i<numOfCells; ++i)
+        {
+            groundCells.Add(new CellProperties(this.transform.position, cellSize));
         }
     } 
 }
