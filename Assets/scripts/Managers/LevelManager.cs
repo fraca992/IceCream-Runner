@@ -15,7 +15,7 @@ public class LevelManager : MonoBehaviour
     #region Street Variables
     [SerializeField]
     private int stackSize = 10;
-    public Segment.SegmentSpawner lvl1Spawner;
+    public Segment.Spawner lvl1Spawner;
     private string groundPrefabPath = "Grounds/Street";
     private string obstacleFolderPath = "Obstacles";
     [SerializeField]
@@ -34,7 +34,7 @@ public class LevelManager : MonoBehaviour
         player = GameObject.Find("Player");
 
         // Spawn initial segments
-        lvl1Spawner = new Segment.SegmentSpawner(groundPrefabPath, obstacleFolderPath, stackSize, maxObstacles);
+        lvl1Spawner = new Segment.Spawner(groundPrefabPath, obstacleFolderPath, stackSize, maxObstacles);
         for (int i = 0; i < stackSize; i++)
         {
             lvl1Spawner.SpawnSegment(groundBudget, streetXCellNum, streetZCellNum);
