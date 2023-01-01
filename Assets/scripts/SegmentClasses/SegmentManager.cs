@@ -25,42 +25,103 @@ public class SegmentManager : MonoBehaviour
         obstacleSpawner = new ItemSpawner(obsPath);
     }
 
+    // Class describing a single segment
     public class Segment
     {
         public GameObject ground;
-        public List<Cell> cells;
+
+        public int xCellNumber, zCellNumber;
+        public float cellSize;
+        public List<Cell> Cells { get { return GetUpdatedCellCoordinates(Cells, 1, 3f); } set { Cells = value; } }
         public List<GameObject> obstacles;
 
         // Constructor
-        public Segment(GameObject grnd, List<Cell> clls, List<GameObject> obs)
+        public Segment(GameObject grnd, int xCellNum, int zCellNum, float clSize, List<GameObject> obs)
         {
             ground = grnd;
-            cells = clls;
+            xCellNumber= xCellNum;
+            zCellNumber= zCellNum;
+            cellSize = clSize;
+            Cells = new List<Cell> test();
+
+            Cells = GetUpdatedCellCoordinates(clls, xCellNum, cellSize);
             obstacles = obs;
+        }
+
+        // Computes an updated position for the cells
+        private List<Cell> GetUpdatedCellCoordinates(List<Cell> cells, int xCellNumber, float cellSize)
+        {
+            // compute cell coordinates
+            int zIndex = 0;
+            int xIndex = 0;
+            Vector3 cellCoordinatesDelta = new Vector3(0f, 0f, 0f);
+
+            for (int i = 0; i < cells.Count / 2; i++)
+            {
+                zIndex = i / xCellNumber;
+                xIndex = i - zIndex * xCellNumber;
+
+                cellCoordinatesDelta.x = (2 * xIndex + 1) * cellSize / 2f - this.ground.GetComponent<GroundProperties>().SidewalkWidth / 2f;
+                cellCoordinatesDelta.y = this.ground.GetComponent<GroundProperties>().SidewalkHeight;
+                cellCoordinatesDelta.z = this.ground.GetComponent<GroundProperties>().SidewalkLength / 2f - (2 * zIndex + 1) * cellSize / 2f;
+
+                // the final cell coordinates
+                cells[i].Coordinates = this.ground.transform.GetChild(1).position + cellCoordinatesDelta;
+            }
+            for (int i = cells.Count / 2; i < cells.Count; i++)
+            {
+                int ii = i - cells.Count / 2;
+                zIndex = ii / xCellNumber;
+                xIndex = ii - zIndex * xCellNumber;
+
+                cellCoordinatesDelta.x = (2 * xIndex + 1) * cellSize / 2f - this.ground.GetComponent<GroundProperties>().SidewalkWidth / 2f;
+                cellCoordinatesDelta.y = this.ground.GetComponent<GroundProperties>().SidewalkHeight;
+                cellCoordinatesDelta.z = this.ground.GetComponent<GroundProperties>().SidewalkLength / 2f - (2 * zIndex + 1) * cellSize / 2f;
+
+                // the final cell coordinates
+                cells[i].Coordinates = this.ground.transform.GetChild(2).position + cellCoordinatesDelta;
+            }
+
+            return cells;
         }
     }
 
+
     // Spawns a new ground segment ahead of the player
     public void SpawnSegment(int totalBudget)
+    {
+        Vector3 spawnCoordinates = GetNextGroundCoordinates();
+
+        // Spawning ground
+        GameObject newGround = Instantiate(Resources.Load<GameObject>(GroundPath), spawnCoordinates, Quaternion.identity);
+        newGround.GetComponent<GroundProperties>().InitializeGroundProperties(totalBudget, Tools.GetNextValue());
+
+        // TODO: Create cells
+        float cellSize = SidewalkWidth / NumOfCellsX;
+        int numOfCells = 2 * (xNum * zNum);
+
+        // checking if we get the same size if computing along the z axis
+        if (cellSize != SidewalkLength / NumOfCellsZ)
         {
-            Vector3 spawnCoordinates = GetNextGroundCoordinates();
-
-            // Spawning ground
-            GameObject newGround = Instantiate(Resources.Load<GameObject>(GroundPath), spawnCoordinates, Quaternion.identity);
-            newGround.GetComponent<GroundProperties>().InitializeGroundProperties(totalBudget, Tools.GetNextValue());
-
-            // TODO: Create cells
-
-            // Spawning obstacles
-            obstacleSpawner.FillItemList(maxObstacles, totalBudget);
-            List<GameObject> newObstacles = obstacleSpawner.PlaceItems(newGround);
-
-            // creating the new Segment
-            Segment newSegment = new Segment(newGround, ,newObstacles); // TODO> Add cells here
-
-            InsertSegmentIntoStack(newSegment);
-            return;
+            Debug.LogWarning("WARNING: Ground size doesn't allow for square cells. cells MUST be square!" + $" width: {sidewalkWidth} x length: {sidewalkLength}, cellsize: {cellSize} x {sidewalkLength / NumOfCellsZ}");
         }
+        // instantiating cells in Cell Array with starting points
+        for (int i = 0; i < numOfCells; ++i)
+        {
+            groundCells.Add(new CellProperties(this.transform.position, cellSize));
+        }
+
+
+        // Spawning obstacles
+        obstacleSpawner.FillItemList(maxObstacles, totalBudget);
+        List<GameObject> newObstacles = obstacleSpawner.PlaceItems(newGround);
+
+        // creating the new Segment
+        Segment newSegment = new Segment(newGround, , newObstacles); // TODO> Add cells here
+
+        InsertSegmentIntoStack(newSegment);
+        return;
+    }
 
     // Computes coordinates for spawning a new ground segment
     private Vector3 GetNextGroundCoordinates()
@@ -91,70 +152,8 @@ public class SegmentManager : MonoBehaviour
 
         segmentStack.Add(seg);
     }
-
-    // TO REVIEEEW///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    //// used to access the position of the cells
-    //public List<Cell> GetGroundCells()
-    //{
-    //    return GetUpdatedCellCoordinates(groundCells, NumOfCellsX, NumOfCellsZ, groundCells[0].Size);
-    //}
-
-    // Computes an updated position for the cells
-    List<Cell> GetUpdatedCellCoordinates(List<Cell> cells, int xCellNumber, int zCellNumber, float cellSize)
-    {
-        // compute cell coordinates
-        int zIndex = 0;
-        int xIndex = 0;
-        Vector3 cellCoordinatesDelta = new Vector3(0f, 0f, 0f);
-
-        for (int i = 0; i < cells.Count / 2; i++)
-        {
-            zIndex = i / xCellNumber;
-            xIndex = i - zIndex * xCellNumber;
-
-            cellCoordinatesDelta.x = (2 * xIndex + 1) * cellSize / 2f - sidewalkWidth / 2f;
-            cellCoordinatesDelta.y = sidewalkHeight;
-            cellCoordinatesDelta.z = sidewalkLength / 2f - (2 * zIndex + 1) * cellSize / 2f;
-
-            // the final cell coordinates
-            cells[i].Coordinates = this.transform.GetChild(1).position + cellCoordinatesDelta;
-        }
-        for (int i = cells.Count / 2; i < cells.Count; i++)
-        {
-            int ii = i - cells.Count / 2;
-            zIndex = ii / xCellNumber;
-            xIndex = ii - zIndex * xCellNumber;
-
-            cellCoordinatesDelta.x = (2 * xIndex + 1) * cellSize / 2f - sidewalkWidth / 2f;
-            cellCoordinatesDelta.y = sidewalkHeight;
-            cellCoordinatesDelta.z = sidewalkLength / 2f - (2 * zIndex + 1) * cellSize / 2f;
-
-            // the final cell coordinates
-            cells[i].Coordinates = this.transform.GetChild(2).position + cellCoordinatesDelta;
-        }
-
-        return cells;
-    }
-
-    //
-    float cellSize = SidewalkWidth / NumOfCellsX;
-    int numOfCells = 2 * (xNum * zNum);
-
-// checking if we get the same size if computing along the z axis
-if (cellSize != SidewalkLength / NumOfCellsZ)
-{
-    Debug.LogWarning("WARNING: Ground size doesn't allow for square cells. cells MUST be square!" + $" width: {sidewalkWidth} x length: {sidewalkLength}, cellsize: {cellSize} x {sidewalkLength / NumOfCellsZ}");
 }
 
-// instantiating cells in Cell Array with starting points
-for (int i = 0; i < numOfCells; ++i)
-{
-    groundCells.Add(new CellProperties(this.transform.position, cellSize));
-}
-} 
-
-    }
 
 
 // Class describing an Item spawner. This object manages the lists of Items (obstacles, power-ups, etc.), selects new items once a new ground segment spawns
