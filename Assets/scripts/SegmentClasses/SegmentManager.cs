@@ -1,242 +1,242 @@
-using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using UnityEngine;
-using Common;
+//using System;
+//using System.Collections.Generic;
+//using System.Runtime.CompilerServices;
+//using UnityEngine;
+//using Common;
 
-// Class describing the ground segments Stack. Structured as a FIFO.
-// Also implements all the Stack functionalities like spawning new ground, trigger Item/Obstacle placement etc.
-public class SegmentManager : MonoBehaviour
-{
-    public int StackSize { get; private set; }
-    public int maxObstacles { get; private set; }
-    public string GroundPath { private get; set; }
-    public int StackCount { get { return segmentStack.Count; } }
+//// Class describing the ground segments Stack. Structured as a FIFO.
+//// Also implements all the Stack functionalities like spawning new ground, trigger Item/Obstacle placement etc.
+//public class SegmentManager : MonoBehaviour
+//{
+//    public int StackSize { get; private set; }
+//    public int maxObstacles { get; private set; }
+//    public string GroundPath { private get; set; }
+//    public int StackCount { get { return segmentStack.Count; } }
 
-    private ItemSpawner obstacleSpawner;
-    public List<Segment> segmentStack = new List<Segment>();
+//    private ItemSpawner obstacleSpawner;
+//    public List<Segment> segmentStack = new List<Segment>();
 
-    // Constructor
-    public SegmentManager(string itmPath, string obsPath, int size, int maxObs)
-    {
-        StackSize = size;
-        maxObstacles = maxObs;
-        GroundPath = itmPath;
-        obstacleSpawner = new ItemSpawner(obsPath);
-    }
+//    // Constructor
+//    public SegmentManager(string itmPath, string obsPath, int size, int maxObs)
+//    {
+//        StackSize = size;
+//        maxObstacles = maxObs;
+//        GroundPath = itmPath;
+//        obstacleSpawner = new ItemSpawner(obsPath);
+//    }
 
-    // Class describing a single segment
-    public class Segment
-    {
-        public GameObject ground;
+//    // Class describing a single segment
+//    public class Segment
+//    {
+//        public GameObject ground;
 
-        public int xCellNumber, zCellNumber;
-        public float cellSize;
-        public List<Cell> Cells { get { return GetUpdatedCellCoordinates(Cells, 1, 3f); } set { Cells = value; } }
-        public List<GameObject> obstacles;
+//        public int xCellNumber, zCellNumber;
+//        public float cellSize;
+//        public List<Cell> Cells { get { return GetUpdatedCellCoordinates(Cells, 1, 3f); } set { Cells = value; } }
+//        public List<GameObject> obstacles;
 
-        // Constructor
-        public Segment(GameObject grnd, int xCellNum, int zCellNum, float clSize, List<GameObject> obs)
-        {
-            ground = grnd;
-            xCellNumber= xCellNum;
-            zCellNumber= zCellNum;
-            cellSize = clSize;
-            Cells = new List<Cell> test();
+//        // Constructor
+//        public Segment(GameObject grnd, int xCellNum, int zCellNum, float clSize, List<GameObject> obs)
+//        {
+//            ground = grnd;
+//            xCellNumber= xCellNum;
+//            zCellNumber= zCellNum;
+//            cellSize = clSize;
+//            Cells = new List<Cell> test();
 
-            Cells = GetUpdatedCellCoordinates(clls, xCellNum, cellSize);
-            obstacles = obs;
-        }
+//            Cells = GetUpdatedCellCoordinates(clls, xCellNum, cellSize);
+//            obstacles = obs;
+//        }
 
-        // Computes an updated position for the cells
-        private List<Cell> GetUpdatedCellCoordinates(List<Cell> cells, int xCellNumber, float cellSize)
-        {
-            // compute cell coordinates
-            int zIndex = 0;
-            int xIndex = 0;
-            Vector3 cellCoordinatesDelta = new Vector3(0f, 0f, 0f);
+//        // Computes an updated position for the cells
+//        private List<Cell> GetUpdatedCellCoordinates(List<Cell> cells, int xCellNumber, float cellSize)
+//        {
+//            // compute cell coordinates
+//            int zIndex = 0;
+//            int xIndex = 0;
+//            Vector3 cellCoordinatesDelta = new Vector3(0f, 0f, 0f);
 
-            for (int i = 0; i < cells.Count / 2; i++)
-            {
-                zIndex = i / xCellNumber;
-                xIndex = i - zIndex * xCellNumber;
+//            for (int i = 0; i < cells.Count / 2; i++)
+//            {
+//                zIndex = i / xCellNumber;
+//                xIndex = i - zIndex * xCellNumber;
 
-                cellCoordinatesDelta.x = (2 * xIndex + 1) * cellSize / 2f - this.ground.GetComponent<GroundProperties>().SidewalkWidth / 2f;
-                cellCoordinatesDelta.y = this.ground.GetComponent<GroundProperties>().SidewalkHeight;
-                cellCoordinatesDelta.z = this.ground.GetComponent<GroundProperties>().SidewalkLength / 2f - (2 * zIndex + 1) * cellSize / 2f;
+//                cellCoordinatesDelta.x = (2 * xIndex + 1) * cellSize / 2f - this.ground.GetComponent<GroundProperties>().SidewalkWidth / 2f;
+//                cellCoordinatesDelta.y = this.ground.GetComponent<GroundProperties>().SidewalkHeight;
+//                cellCoordinatesDelta.z = this.ground.GetComponent<GroundProperties>().SidewalkLength / 2f - (2 * zIndex + 1) * cellSize / 2f;
 
-                // the final cell coordinates
-                cells[i].Coordinates = this.ground.transform.GetChild(1).position + cellCoordinatesDelta;
-            }
-            for (int i = cells.Count / 2; i < cells.Count; i++)
-            {
-                int ii = i - cells.Count / 2;
-                zIndex = ii / xCellNumber;
-                xIndex = ii - zIndex * xCellNumber;
+//                // the final cell coordinates
+//                cells[i].Coordinates = this.ground.transform.GetChild(1).position + cellCoordinatesDelta;
+//            }
+//            for (int i = cells.Count / 2; i < cells.Count; i++)
+//            {
+//                int ii = i - cells.Count / 2;
+//                zIndex = ii / xCellNumber;
+//                xIndex = ii - zIndex * xCellNumber;
 
-                cellCoordinatesDelta.x = (2 * xIndex + 1) * cellSize / 2f - this.ground.GetComponent<GroundProperties>().SidewalkWidth / 2f;
-                cellCoordinatesDelta.y = this.ground.GetComponent<GroundProperties>().SidewalkHeight;
-                cellCoordinatesDelta.z = this.ground.GetComponent<GroundProperties>().SidewalkLength / 2f - (2 * zIndex + 1) * cellSize / 2f;
+//                cellCoordinatesDelta.x = (2 * xIndex + 1) * cellSize / 2f - this.ground.GetComponent<GroundProperties>().SidewalkWidth / 2f;
+//                cellCoordinatesDelta.y = this.ground.GetComponent<GroundProperties>().SidewalkHeight;
+//                cellCoordinatesDelta.z = this.ground.GetComponent<GroundProperties>().SidewalkLength / 2f - (2 * zIndex + 1) * cellSize / 2f;
 
-                // the final cell coordinates
-                cells[i].Coordinates = this.ground.transform.GetChild(2).position + cellCoordinatesDelta;
-            }
+//                // the final cell coordinates
+//                cells[i].Coordinates = this.ground.transform.GetChild(2).position + cellCoordinatesDelta;
+//            }
 
-            return cells;
-        }
-    }
-
-
-    // Spawns a new ground segment ahead of the player
-    public void SpawnSegment(int totalBudget)
-    {
-        Vector3 spawnCoordinates = GetNextGroundCoordinates();
-
-        // Spawning ground
-        GameObject newGround = Instantiate(Resources.Load<GameObject>(GroundPath), spawnCoordinates, Quaternion.identity);
-        newGround.GetComponent<GroundProperties>().InitializeGroundProperties(totalBudget, Tools.GetNextValue());
-
-        // TODO: Create cells
-        float cellSize = SidewalkWidth / NumOfCellsX;
-        int numOfCells = 2 * (xNum * zNum);
-
-        // checking if we get the same size if computing along the z axis
-        if (cellSize != SidewalkLength / NumOfCellsZ)
-        {
-            Debug.LogWarning("WARNING: Ground size doesn't allow for square cells. cells MUST be square!" + $" width: {sidewalkWidth} x length: {sidewalkLength}, cellsize: {cellSize} x {sidewalkLength / NumOfCellsZ}");
-        }
-        // instantiating cells in Cell Array with starting points
-        for (int i = 0; i < numOfCells; ++i)
-        {
-            groundCells.Add(new CellProperties(this.transform.position, cellSize));
-        }
+//            return cells;
+//        }
+//    }
 
 
-        // Spawning obstacles
-        obstacleSpawner.FillItemList(maxObstacles, totalBudget);
-        List<GameObject> newObstacles = obstacleSpawner.PlaceItems(newGround);
+//    // Spawns a new ground segment ahead of the player
+//    public void SpawnSegment(int totalBudget)
+//    {
+//        Vector3 spawnCoordinates = GetNextGroundCoordinates();
 
-        // creating the new Segment
-        Segment newSegment = new Segment(newGround, , newObstacles); // TODO> Add cells here
+//        // Spawning ground
+//        GameObject newGround = Instantiate(Resources.Load<GameObject>(GroundPath), spawnCoordinates, Quaternion.identity);
+//        newGround.GetComponent<GroundProperties>().InitializeGroundProperties(totalBudget, Tools.GetNextValue());
 
-        InsertSegmentIntoStack(newSegment);
-        return;
-    }
+//        // TODO: Create cells
+//        float cellSize = SidewalkWidth / NumOfCellsX;
+//        int numOfCells = 2 * (xNum * zNum);
 
-    // Computes coordinates for spawning a new ground segment
-    private Vector3 GetNextGroundCoordinates()
-    {
-        Vector3 nextCoords = Vector3.zero;
-        float streetLength = StackCount == 0 ? 0 : Tools.GetSize(segmentStack[StackCount - 1].ground, 'z', 'r');
-
-        nextCoords.z = StackCount == 0 ? 0 : segmentStack[StackCount - 1].ground.transform.position.z + streetLength;
-
-        return nextCoords;
-    }
-
-    // Inserts new segment into the Stack
-    private void InsertSegmentIntoStack(Segment seg)
-    {
-        // Before inserting a new street segment into the stack, we remove the oldest one (index = 0), if it would exceed the stack's max size
-        if (segmentStack.Count == StackSize)
-        {
-            foreach (var obs in segmentStack[0].obstacles)
-            {
-                GameObject.Destroy(obs);
-            }
-
-            GameObject.Destroy(segmentStack[0].ground);
-
-            segmentStack.RemoveAt(0);
-        }
-
-        segmentStack.Add(seg);
-    }
-}
+//        // checking if we get the same size if computing along the z axis
+//        if (cellSize != SidewalkLength / NumOfCellsZ)
+//        {
+//            Debug.LogWarning("WARNING: Ground size doesn't allow for square cells. cells MUST be square!" + $" width: {sidewalkWidth} x length: {sidewalkLength}, cellsize: {cellSize} x {sidewalkLength / NumOfCellsZ}");
+//        }
+//        // instantiating cells in Cell Array with starting points
+//        for (int i = 0; i < numOfCells; ++i)
+//        {
+//            groundCells.Add(new CellProperties(this.transform.position, cellSize));
+//        }
 
 
+//        // Spawning obstacles
+//        obstacleSpawner.FillItemList(maxObstacles, totalBudget);
+//        List<GameObject> newObstacles = obstacleSpawner.PlaceItems(newGround);
 
-// Class describing an Item spawner. This object manages the lists of Items (obstacles, power-ups, etc.), selects new items once a new ground segment spawns
-// and places them on the segment.
-// TODO: for now the item placement is completely random. implement an algorithm to avoid path blocking and unbalanced positioning!
-public class ItemSpawner
-    {
-        public string ItemPath { private get; set; }
-        private List<GameObject> allItems = new List<GameObject>();
-        private List<GameObject> selectedItems = new List<GameObject>();
-        public List<GameObject> spawnedItems = new List<GameObject>();
-        private int minCost;
+//        // creating the new Segment
+//        Segment newSegment = new Segment(newGround, , newObstacles); // TODO> Add cells here
 
-        // Constructor
-        public ItemSpawner(string path)
-        {
-            ItemPath = path;
+//        InsertSegmentIntoStack(newSegment);
+//        return;
+//    }
 
-            allItems.AddRange(Resources.LoadAll<GameObject>(ItemPath));
+//    // Computes coordinates for spawning a new ground segment
+//    private Vector3 GetNextGroundCoordinates()
+//    {
+//        Vector3 nextCoords = Vector3.zero;
+//        float streetLength = StackCount == 0 ? 0 : Tools.GetSize(segmentStack[StackCount - 1].ground, 'z', 'r');
 
-            //minCost of allItems is found to ensure we don't get stuck while selecting items if remaining budget is too low
-            minCost = allItems[0].GetComponent<ObstacleProperties>().Cost;
-            for (int i = 1; i < allItems.Count; i++)
-            {
-                int tempCost = allItems[i].GetComponent<ObstacleProperties>().Cost;
-                if (tempCost < minCost)
-                {
-                    minCost = tempCost;
-                }
-            }
-        }
+//        nextCoords.z = StackCount == 0 ? 0 : segmentStack[StackCount - 1].ground.transform.position.z + streetLength;
 
-        // this function fills selectedItems with the Items that will be placed on the segment.
-        public void FillItemList(int maxItems, int totBudget)
-        {
-            int budget = totBudget;
+//        return nextCoords;
+//    }
 
-            selectedItems.Clear();
+//    // Inserts new segment into the Stack
+//    private void InsertSegmentIntoStack(Segment seg)
+//    {
+//        // Before inserting a new street segment into the stack, we remove the oldest one (index = 0), if it would exceed the stack's max size
+//        if (segmentStack.Count == StackSize)
+//        {
+//            foreach (var obs in segmentStack[0].obstacles)
+//            {
+//                GameObject.Destroy(obs);
+//            }
 
-            // we add items to the list as long as we don't reach maxItems or the budget is too low to afford even the cheaper item
-            while (selectedItems.Count < maxItems && budget >= minCost)
-            {
-                int rndIndex = Random.Range(0, allItems.Count);
-                bool canAfford = budget > allItems[rndIndex].GetComponent<ObstacleProperties>().Cost;
+//            GameObject.Destroy(segmentStack[0].ground);
 
-                if (canAfford)
-                {
-                    selectedItems.Add(allItems[rndIndex]);
-                    budget -= allItems[rndIndex].GetComponent<ObstacleProperties>().Cost;
-                }
-            }
-            return;
-        }
+//            segmentStack.RemoveAt(0);
+//        }
 
-        // this function places all the selected Items on the Ground segment
-        public List<GameObject> PlaceItems(GameObject ground, List<GameObject> items = null)
-        {
-            spawnedItems.Clear();
+//        segmentStack.Add(seg);
+//    }
+//}
 
-            if (items == null) items = selectedItems;
 
-            List<Cell> cells = ground.GetComponent<GroundProperties>().GetGroundCells();
 
-            int rndCellIndex;
-            int rndItemIndex;
+//// Class describing an Item spawner. This object manages the lists of Items (obstacles, power-ups, etc.), selects new items once a new ground segment spawns
+//// and places them on the segment.
+//// TODO: for now the item placement is completely random. implement an algorithm to avoid path blocking and unbalanced positioning!
+//public class ItemSpawner
+//    {
+//        public string ItemPath { private get; set; }
+//        private List<GameObject> allItems = new List<GameObject>();
+//        private List<GameObject> selectedItems = new List<GameObject>();
+//        public List<GameObject> spawnedItems = new List<GameObject>();
+//        private int minCost;
 
-            // we place items until we have 0 items and/or no space
-            while (items.Count > 0 && cells.Count > 0)
-            {
-                rndCellIndex = Random.Range(0, cells.Count);
-                rndItemIndex = Random.Range(0, items.Count);
+//        // Constructor
+//        public ItemSpawner(string path)
+//        {
+//            ItemPath = path;
 
-                GameObject itm = selectedItems[rndItemIndex];
-                Cell cl = cells[rndCellIndex];
+//            allItems.AddRange(Resources.LoadAll<GameObject>(ItemPath));
 
-                // TODO: Must eventually account for different size/shape of items
-                if (cl.isOccupied == false)
-                {
-                    spawnedItems.Add(Instantiate(itm, cl.Coordinates, Quaternion.identity));
-                    cells.RemoveAt(rndCellIndex);
-                    items.RemoveAt(rndItemIndex);
-                }
-            }
-            return spawnedItems;
-        }
-    }
+//            //minCost of allItems is found to ensure we don't get stuck while selecting items if remaining budget is too low
+//            minCost = allItems[0].GetComponent<ObstacleProperties>().Cost;
+//            for (int i = 1; i < allItems.Count; i++)
+//            {
+//                int tempCost = allItems[i].GetComponent<ObstacleProperties>().Cost;
+//                if (tempCost < minCost)
+//                {
+//                    minCost = tempCost;
+//                }
+//            }
+//        }
+
+//        // this function fills selectedItems with the Items that will be placed on the segment.
+//        public void FillItemList(int maxItems, int totBudget)
+//        {
+//            int budget = totBudget;
+
+//            selectedItems.Clear();
+
+//            // we add items to the list as long as we don't reach maxItems or the budget is too low to afford even the cheaper item
+//            while (selectedItems.Count < maxItems && budget >= minCost)
+//            {
+//                int rndIndex = Random.Range(0, allItems.Count);
+//                bool canAfford = budget > allItems[rndIndex].GetComponent<ObstacleProperties>().Cost;
+
+//                if (canAfford)
+//                {
+//                    selectedItems.Add(allItems[rndIndex]);
+//                    budget -= allItems[rndIndex].GetComponent<ObstacleProperties>().Cost;
+//                }
+//            }
+//            return;
+//        }
+
+//        // this function places all the selected Items on the Ground segment
+//        public List<GameObject> PlaceItems(GameObject ground, List<GameObject> items = null)
+//        {
+//            spawnedItems.Clear();
+
+//            if (items == null) items = selectedItems;
+
+//            List<Cell> cells = ground.GetComponent<GroundProperties>().GetGroundCells();
+
+//            int rndCellIndex;
+//            int rndItemIndex;
+
+//            // we place items until we have 0 items and/or no space
+//            while (items.Count > 0 && cells.Count > 0)
+//            {
+//                rndCellIndex = Random.Range(0, cells.Count);
+//                rndItemIndex = Random.Range(0, items.Count);
+
+//                GameObject itm = selectedItems[rndItemIndex];
+//                Cell cl = cells[rndCellIndex];
+
+//                // TODO: Must eventually account for different size/shape of items
+//                if (cl.isOccupied == false)
+//                {
+//                    spawnedItems.Add(Instantiate(itm, cl.Coordinates, Quaternion.identity));
+//                    cells.RemoveAt(rndCellIndex);
+//                    items.RemoveAt(rndItemIndex);
+//                }
+//            }
+//            return spawnedItems;
+//        }
+//    }

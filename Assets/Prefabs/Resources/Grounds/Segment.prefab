@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: -5556985999614427359}
   - component: {fileID: 5883498996168606884}
   m_Layer: 0
-  m_Name: Street
+  m_Name: Segment
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -77,7 +77,7 @@ GameObject:
   - component: {fileID: 5451391178429051888}
   - component: {fileID: 7061159226932710686}
   m_Layer: 0
-  m_Name: rightSidewalk
+  m_Name: RightSidewalk
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -174,7 +174,7 @@ GameObject:
   - component: {fileID: 4962303004534186382}
   - component: {fileID: 1165182600639590624}
   m_Layer: 0
-  m_Name: road
+  m_Name: Road
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -271,7 +271,7 @@ GameObject:
   - component: {fileID: 1221164737693873863}
   - component: {fileID: 4482038707658503467}
   m_Layer: 0
-  m_Name: leftSidewalk
+  m_Name: LeftSidewalk
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
