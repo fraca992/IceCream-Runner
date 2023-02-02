@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: -5556985999614427359}
   - component: {fileID: 5883498996168606884}
   m_Layer: 0
-  m_Name: Segment
+  m_Name: StreetPiece
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
