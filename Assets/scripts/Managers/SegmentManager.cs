@@ -16,40 +16,42 @@ public class SegmentManager : MonoBehaviour
     private ItemSpawner obstacleSpawner;
     public List<Segment> segmentStack = new List<Segment>();
 
-    // Constructor
-    public SegmentManager(string itmPath, string obsPath, int size, int maxObs)
-    {
-        StackSize = size;
-        maxObstacles = maxObs;
-        StreetPiecePath = itmPath;
-        obstacleSpawner = new ItemSpawner(obsPath);
-    }
+    //// Constructor
+    //public SegmentManager(string itmPath, string obsPath, int size, int maxObs)
+    //{
+    //    StackSize = size;
+    //    maxObstacles = maxObs;
+    //    StreetPiecePath = itmPath;
+    //    obstacleSpawner = new ItemSpawner(obsPath);
+    //}
 
     // Class describing a single segment
     public class Segment //TODO: START HERE, refactoring. forza e coraggio :)
     {
-        public GameObject ground;
+        public GameObject StreetPiece { get; private set; }
+        public List<GameObject> Obstacles { get; private set; }
 
-        public int xCellNumber, zCellNumber;
-        public float cellSize;
-        public List<Cell> Cells { get { return GetUpdatedCellCoordinates(Cells, 1, 3f); } set { Cells = value; } }
-        public List<GameObject> obstacles;
+        public int xCellNumber { get; private set; }
+        public int zCellNumber { get; private set; }
+        private float cellSize;
+        public List<CellProperties> Cells { get { return GetUpdatedCellCoordinates(Cells, 1, 3f); } private set { Cells = value; } }
+        
 
         // Constructor
-        public Segment(GameObject grnd, int xCellNum, int zCellNum, float clSize, List<GameObject> obs)
+        public Segment(GameObject strP, int xCellNum, int zCellNum, float clSize, List<GameObject> obs)
         {
-            ground = grnd;
+            streetPiece = strP;
             xCellNumber = xCellNum;
             zCellNumber = zCellNum;
             cellSize = clSize;
-            Cells = new List<Cell> test();
+            Cells = new List<CellProperties> test();
 
             Cells = GetUpdatedCellCoordinates(clls, xCellNum, cellSize);
             obstacles = obs;
         }
 
         // Computes an updated position for the cells
-        private List<Cell> GetUpdatedCellCoordinates(List<Cell> cells, int xCellNumber, float cellSize)
+        private List<CellProperties> GetUpdatedCellCoordinates(List<CellProperties> cells, int xCellNumber, float cellSize)
         {
             // compute cell coordinates
             int zIndex = 0;
@@ -61,12 +63,12 @@ public class SegmentManager : MonoBehaviour
                 zIndex = i / xCellNumber;
                 xIndex = i - zIndex * xCellNumber;
 
-                cellCoordinatesDelta.x = (2 * xIndex + 1) * cellSize / 2f - this.ground.GetComponent<GroundProperties>().SidewalkWidth / 2f;
-                cellCoordinatesDelta.y = this.ground.GetComponent<GroundProperties>().SidewalkHeight;
-                cellCoordinatesDelta.z = this.ground.GetComponent<GroundProperties>().SidewalkLength / 2f - (2 * zIndex + 1) * cellSize / 2f;
+                cellCoordinatesDelta.x = (2 * xIndex + 1) * cellSize / 2f - this.streetPiece.GetComponent<GroundProperties>().SidewalkWidth / 2f;
+                cellCoordinatesDelta.y = this.streetPiece.GetComponent<GroundProperties>().SidewalkHeight;
+                cellCoordinatesDelta.z = this.streetPiece.GetComponent<GroundProperties>().SidewalkLength / 2f - (2 * zIndex + 1) * cellSize / 2f;
 
                 // the final cell coordinates
-                cells[i].Coordinates = this.ground.transform.GetChild(1).position + cellCoordinatesDelta;
+                cells[i].Coordinates = this.streetPiece.transform.GetChild(1).position + cellCoordinatesDelta;
             }
             for (int i = cells.Count / 2; i < cells.Count; i++)
             {
@@ -74,12 +76,12 @@ public class SegmentManager : MonoBehaviour
                 zIndex = ii / xCellNumber;
                 xIndex = ii - zIndex * xCellNumber;
 
-                cellCoordinatesDelta.x = (2 * xIndex + 1) * cellSize / 2f - this.ground.GetComponent<GroundProperties>().SidewalkWidth / 2f;
-                cellCoordinatesDelta.y = this.ground.GetComponent<GroundProperties>().SidewalkHeight;
-                cellCoordinatesDelta.z = this.ground.GetComponent<GroundProperties>().SidewalkLength / 2f - (2 * zIndex + 1) * cellSize / 2f;
+                cellCoordinatesDelta.x = (2 * xIndex + 1) * cellSize / 2f - this.streetPiece.GetComponent<GroundProperties>().SidewalkWidth / 2f;
+                cellCoordinatesDelta.y = this.streetPiece.GetComponent<GroundProperties>().SidewalkHeight;
+                cellCoordinatesDelta.z = this.streetPiece.GetComponent<GroundProperties>().SidewalkLength / 2f - (2 * zIndex + 1) * cellSize / 2f;
 
                 // the final cell coordinates
-                cells[i].Coordinates = this.ground.transform.GetChild(2).position + cellCoordinatesDelta;
+                cells[i].Coordinates = this.streetPiece.transform.GetChild(2).position + cellCoordinatesDelta;
             }
 
             return cells;
@@ -100,7 +102,7 @@ public class SegmentManager : MonoBehaviour
     //        float cellSize = SidewalkWidth / NumOfCellsX;
     //        int numOfCells = 2 * (xNum * zNum);
 
-    //        // checking if we get the same size if computing along the z axis
+    //        // checking if we get the same size if computing along the z axis //TODO: MOVE TO SEGMENT
     //        if (cellSize != SidewalkLength / NumOfCellsZ)
     //        {
     //            Debug.LogWarning("WARNING: Ground size doesn't allow for square cells. cells MUST be square!" + $" width: {sidewalkWidth} x length: {sidewalkLength}, cellsize: {cellSize} x {sidewalkLength / NumOfCellsZ}");
