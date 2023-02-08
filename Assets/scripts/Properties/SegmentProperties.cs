@@ -3,24 +3,36 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public class SegmentProperties //TODO: START HERE, refactoring. forza e coraggio :)
+public class SegmentProperties
 {
-    public GameObject StreetPiece { get; private set; }
-    public List<GameObject> Obstacles { get; private set; }
+    public int Budget { get; private set; }
+    public StreetPieceProperties StreetPiece { get; private set; }
+    public List<ObstacleProperties> Obstacles { get; private set; }
 
     private int xCellNumber;
+    private int zCellNumber;
     private float cellSize;
-    public List<CellProperties> Cells { get { return GetUpdatedCellCoordinates(StreetPiece, Cells, xCellNumber, cellSize); } private set { Cells = value; } }
-    
+    public List<CellProperties> Cells { get { return GetUpdatedCellCoordinates(StreetPiece.gameObject, Cells, xCellNumber, cellSize); } private set { Cells = value; } }
 
     // Constructor
-    public SegmentProperties(GameObject strP, List<GameObject> obs, List<CellProperties> cls, int xCellNum, float cellSz)
+    public SegmentProperties(int budget, StreetPieceProperties strP, List<ObstacleProperties> obs, List<CellProperties> cls, int xCellNum, int zCellNum)
     {
+        Budget = budget;
         StreetPiece = strP;
         Obstacles = obs;
         Cells = cls;
         xCellNumber = xCellNum;
-        cellSize = cellSz;
+        zCellNumber= zCellNum;
+
+        // checking if we get the same size if computing along the z axis
+        if ((StreetPiece.Length / zCellNumber) == (StreetPiece.Width / xCellNumber))
+        {
+            cellSize = StreetPiece.Length / zCellNumber;
+        } else
+        {
+            Debug.LogWarning("WARNING: Ground size doesn't allow for square cells. cells MUST be square!" + 
+                $" width: {StreetPiece.SidewalkWidth} x length: {StreetPiece.Length}, cellsize: {(StreetPiece.Length / zCellNumber)} x {(StreetPiece.Width / xCellNumber)}");
+        }
     }
 
     // Computes an updated position for the cells
@@ -61,4 +73,3 @@ public class SegmentProperties //TODO: START HERE, refactoring. forza e coraggio
         return cells;
     }
 }
-

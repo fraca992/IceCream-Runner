@@ -8,89 +8,94 @@ using Common;
 // Also implements all the Stack functionalities like spawning new ground, trigger Item/Obstacle placement etc.
 public class SegmentManager : MonoBehaviour
 {
-    public int StackSize { get; private set; }
-    public int maxObstacles { get; private set; }
-    public string StreetPiecePath { private get; set; }
-    public int StackCount { get { return segmentStack.Count; } }
+    private string streetPiecePath;
+    private int xNumofCells;
+    private int zNumofCells;
 
     private ItemSpawner obstacleSpawner;
-    public List<SegmentProperties> segmentStack = new List<SegmentProperties>();
+    public int Budget { get; set; }
+    private int maxObstacles;
+
+    public List<SegmentProperties> segmentStack;
+    public int stackSize { get; private set; }
+    private int StackCount { get { return segmentStack.Count; } }
 
     // Constructor
-    public SegmentManager(string strtPcPath, string obsPath, int size, int maxObs)
+    public SegmentManager(string strtPcPath, int xCells, int zCells, string obsPath, int budget, int maxObs, int stkSize)
     {
-        StackSize = size;
-        maxObstacles = maxObs;
-        StreetPiecePath = strtPcPath;
+        streetPiecePath = strtPcPath;
+        xNumofCells= xCells;
+        zNumofCells= zCells;
+
         obstacleSpawner = new ItemSpawner(obsPath);
+        Budget = budget;
+        maxObstacles = maxObs;
+
+        segmentStack = new List<SegmentProperties>();
+        stackSize = stkSize;
     }
 
-
-    //    // Spawns a new ground segment ahead of the player
-    //    public void SpawnSegment(int totalBudget)
-    //    {
-    //        Vector3 spawnCoordinates = GetNextGroundCoordinates();
-
-    //        // Spawning ground
-    //        GameObject newGround = Instantiate(Resources.Load<GameObject>(GroundPath), spawnCoordinates, Quaternion.identity);
-    //        newGround.GetComponent<GroundProperties>().InitializeGroundProperties(totalBudget, Tools.GetNextValue());
-
-    //        // TODO: Create cells
-    //        float cellSize = SidewalkWidth / NumOfCellsX;
-    //        int numOfCells = 2 * (xNum * zNum);
-
-    //        // checking if we get the same size if computing along the z axis //TODO: MOVE TO SEGMENT
-    //        if (cellSize != SidewalkLength / NumOfCellsZ)
-    //        {
-    //            Debug.LogWarning("WARNING: Ground size doesn't allow for square cells. cells MUST be square!" + $" width: {sidewalkWidth} x length: {sidewalkLength}, cellsize: {cellSize} x {sidewalkLength / NumOfCellsZ}");
-    //        }
-    //        // instantiating cells in Cell Array with starting points
-    //        for (int i = 0; i < numOfCells; ++i)
-    //        {
-    //            groundCells.Add(new CellProperties(this.transform.position, cellSize));
-    //        }
+    // Spawns a new ground segment ahead of the player //TODO: START REFACTORING HERE
+    public void SpawnSegment(int totalBudget)
+    {
+        // Spawning ground
+        Vector3 spawnCoordinates = GetNextStreetPieceCoordinates();
+        StreetPieceProperties newStreetPiece = Instantiate(Resources.Load<GameObject>(streetPiecePath), spawnCoordinates, Quaternion.identity).GetComponent<StreetPieceProperties>();
+        newStreetPiece.GetComponent<StreetPieceProperties>().SPConstructor(Tools.GetNextValue());
 
 
-    //        // Spawning obstacles
-    //        obstacleSpawner.FillItemList(maxObstacles, totalBudget);
-    //        List<GameObject> newObstacles = obstacleSpawner.PlaceItems(newGround);
+        // instantiating cells in Cell Array with starting points
+        List<CellProperties> newCells = new List<CellProperties>();
+        int numOfCells = 2 * (xNumofCells * zNumofCells);
+        for (int i = 0; i < numOfCells; ++i)
+        {
+            // to easily recognize the cells as belonging to a segment, the ID will be built using the ID of the Street Piece + Cell number
+            int newCellID = Int32.Parse($"{newStreetPiece.Id}{i}"); //REVIEW: check this actually works!
+            
+            newCells.Add(new CellProperties());
+        }
 
-    //        // creating the new Segment
-    //        Segment newSegment = new Segment(newGround, , newObstacles); // TODO> Add cells here
 
-    //        InsertSegmentIntoStack(newSegment);
-    //        return;
-    //    }
+        // Spawning obstacles
+        obstacleSpawner.FillItemList(maxObstacles, totalBudget);
+        List<ObstacleProperties> newObstacles = obstacleSpawner.PlaceObstacles(newCells);
 
-    //    // Computes coordinates for spawning a new ground segment
-    //    private Vector3 GetNextGroundCoordinates()
-    //    {
-    //        Vector3 nextCoords = Vector3.zero;
-    //        float streetLength = StackCount == 0 ? 0 : Tools.GetSize(segmentStack[StackCount - 1].ground, 'z', 'r');
+        // creating the new Segment
+        SegmentProperties newSegment = new SegmentProperties(Budget, newStreetPiece, newObstacles, newCells, xNumofCells, zNumofCells);
+        InsertSegmentIntoStack(newSegment);
 
-    //        nextCoords.z = StackCount == 0 ? 0 : segmentStack[StackCount - 1].ground.transform.position.z + streetLength;
+        return;
+    }
 
-    //        return nextCoords;
-    //    }
+    // Computes coordinates for spawning a new ground segment
+    private Vector3 GetNextStreetPieceCoordinates()
+    {
+        Vector3 nextCoords = Vector3.zero;
+        float streetLength = StackCount == 0 ? 0 : Tools.GetSize(segmentStack[StackCount - 1].StreetPiece.gameObject, 'z', 'r');
 
-    //    // Inserts new segment into the Stack
-    //    private void InsertSegmentIntoStack(Segment seg)
-    //    {
-    //        // Before inserting a new street segment into the stack, we remove the oldest one (index = 0), if it would exceed the stack's max size
-    //        if (segmentStack.Count == StackSize)
-    //        {
-    //            foreach (var obs in segmentStack[0].obstacles)
-    //            {
-    //                GameObject.Destroy(obs);
-    //            }
+        nextCoords.z = StackCount == 0 ? 0 : segmentStack[StackCount - 1].StreetPiece.gameObject.transform.position.z + streetLength;
 
-    //            GameObject.Destroy(segmentStack[0].ground);
+        return nextCoords;
+    }
 
-    //            segmentStack.RemoveAt(0);
-    //        }
+    // Inserts new segment into the Stack
+    private void InsertSegmentIntoStack(SegmentProperties seg)
+    {
+        // Before inserting a new street segment into the stack, we remove the oldest one (index = 0), if it would exceed the stack's max size
+        if (segmentStack.Count == stackSize)
+        {
+            foreach (var obs in segmentStack[0].Obstacles)
+            {
+                GameObject.Destroy(obs);
+            }
 
-    //        segmentStack.Add(seg);
-    //    }
+            GameObject.Destroy(segmentStack[0].StreetPiece);
+
+            segmentStack.RemoveAt(0);
+        }
+
+        segmentStack.Add(seg);
+    }
 }
 
 
@@ -98,12 +103,13 @@ public class SegmentManager : MonoBehaviour
     // Class describing an Item spawner. This object manages the lists of Items (obstacles, power-ups, etc.), selects new items once a new ground segment spawns
     // and places them on the segment.
     // TODO: for now the item placement is completely random. implement an algorithm to avoid path blocking and unbalanced positioning!
-    public class ItemSpawner
+    // also move to its own script
+    public class ItemSpawner : MonoBehaviour
     {
         private string ItemPath;
         private List<GameObject> allItems = new List<GameObject>();
         private List<GameObject> selectedItems = new List<GameObject>();
-        public List<GameObject> spawnedItems = new List<GameObject>();
+        public List<ObstacleProperties> spawnedObstacles = new List<ObstacleProperties>();
         private int minCost;
 
         // Constructor
@@ -147,20 +153,19 @@ public class SegmentManager : MonoBehaviour
         }
 
         // this function places all the selected Items on the Ground segment
-        public List<GameObject> PlaceItems(List<CellProperties> cells, List<GameObject> items = null) //TODO: maybe pass Segment instead of cells?
+        public List<ObstacleProperties> PlaceObstacles(List<CellProperties> cells)
         {
-            spawnedItems.Clear();
+            spawnedObstacles.Clear();
 
-            if (items == null) items = selectedItems;
 
             int rndCellIndex;
             int rndItemIndex;
 
             // we place items until we have 0 items and/or no space
-            while (items.Count > 0 && cells.Count > 0)
+            while (selectedItems.Count > 0 && cells.Count > 0)
             {
                 rndCellIndex = UnityEngine.Random.Range(0, cells.Count);
-                rndItemIndex = UnityEngine.Random.Range(0, items.Count);
+                rndItemIndex = UnityEngine.Random.Range(0, selectedItems.Count);
 
                 GameObject itm = selectedItems[rndItemIndex];
                 CellProperties cl = cells[rndCellIndex];
@@ -168,11 +173,11 @@ public class SegmentManager : MonoBehaviour
                 // TODO: Must eventually account for different size/shape of items
                 if (cl.isOccupied == false)
                 {
-                    spawnedItems.Add(Instantiate(itm, cl.Coordinates, Quaternion.identity));
+                    spawnedObstacles.Add(Instantiate(itm, cl.Coordinates, Quaternion.identity).GetComponent<ObstacleProperties>());
                     cells.RemoveAt(rndCellIndex);
-                    items.RemoveAt(rndItemIndex);
+                    selectedItems.RemoveAt(rndItemIndex);
                 }
             }
-            return spawnedItems;
+            return spawnedObstacles;
         }
     }

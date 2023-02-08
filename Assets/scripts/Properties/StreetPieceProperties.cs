@@ -5,9 +5,9 @@ using Common;
 public class StreetPieceProperties : MonoBehaviour
 {
     #region Variables
-    public int Budget { get; private set; }
     public int Id { get; private set; }
     public float Length { get; private set; }
+    public float Width { get; private set; }
     public float SidewalkWidth { get; private set; }
     public float SidewalkHeight { get; private set; }
     public float RoadWidth { get; private set; }
@@ -15,14 +15,15 @@ public class StreetPieceProperties : MonoBehaviour
     #endregion
 
     // Constructor
-    public void InitializeGroundProperties (int id)
+    public void SPConstructor (int id)
     {
         Id = id;
 
-        Length = Tools.GetSize(this.transform.gameObject, 'z');
         SidewalkWidth = Tools.GetSize(this.transform.GetChild(1).gameObject, 'x');
         SidewalkHeight = Tools.GetSize(this.transform.GetChild(1).gameObject, 'y');
         RoadWidth = Tools.GetSize(this.transform.GetChild(0).gameObject, 'x');
         RoadHeight = Tools.GetSize(this.transform.GetChild(0).gameObject, 'y');
+        Length = Tools.GetSize(this.transform.gameObject, 'z');
+        Width = 2*SidewalkWidth + RoadWidth;
     }
 }
