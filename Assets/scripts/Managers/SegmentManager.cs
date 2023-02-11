@@ -6,7 +6,7 @@ using Common;
 
 // Class describing the ground segments Stack. Structured as a FIFO.
 // Also implements all the Stack functionalities like spawning new ground, trigger Item/Obstacle placement etc.
-public class SegmentManager : MonoBehaviour
+public class SegmentManager : ScriptableObject
 {
     private string streetPiecePath;
     private int xNumofCells;
@@ -36,8 +36,10 @@ public class SegmentManager : MonoBehaviour
     }
 
     // Spawns a new ground segment ahead of the player
-    public void SpawnSegment(int totalBudget)
+    public void SpawnSegment(int totalBudget = 0)
     {
+        if (totalBudget == 0) totalBudget = Budget;
+
         // Spawning ground
         Vector3 spawnCoordinates = GetNextStreetPieceCoordinates();
         StreetPieceProperties newStreetPiece = Instantiate(Resources.Load<GameObject>(streetPiecePath), spawnCoordinates, Quaternion.identity).GetComponent<StreetPieceProperties>();

@@ -538,10 +538,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   levelSpeed: 0.2
   stackSize: 2
-  groundBudget: 100
+  lvl1SegmentManager: {fileID: 0}
+  segmentBudget: 100
   maxObstacles: 8
-  streetXCellNum: 2
-  streetZCellNum: 10
+  XCellNum: 2
+  ZCellNum: 10
 --- !u!4 &1077238189
 Transform:
   m_ObjectHideFlags: 0
@@ -569,4 +570,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9dbbb647c76cd040a4679ba80b162aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isDebugging: 1

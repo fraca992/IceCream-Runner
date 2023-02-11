@@ -5,7 +5,7 @@ using UnityEngine;
 // Class describing an Item spawner. This object manages the lists of Items (obstacles, power-ups, etc.), selects new items once a new ground segment spawns
 // and places them on the segment.
 // HACK: for now the item placement is completely random. implement an algorithm to avoid path blocking and unbalanced positioning!
-public class ItemSpawner : MonoBehaviour
+public class ItemSpawner : ScriptableObject
 {
     private string ItemPath;
     private List<GameObject> allItems = new List<GameObject>();
