@@ -6,7 +6,7 @@ using Common;
 
 // Class describing the ground segments Stack. Structured as a FIFO.
 // Also implements all the Stack functionalities like spawning new ground, trigger Item/Obstacle placement etc.
-public class SegmentManager : ScriptableObject
+public class SegmentManager
 {
     private string streetPiecePath;
     private int xNumofCells;
@@ -40,9 +40,10 @@ public class SegmentManager : ScriptableObject
     {
         if (totalBudget == 0) totalBudget = Budget;
 
+
         // Spawning ground
         Vector3 spawnCoordinates = GetNextStreetPieceCoordinates();
-        StreetPieceProperties newStreetPiece = Instantiate(Resources.Load<GameObject>(streetPiecePath), spawnCoordinates, Quaternion.identity).GetComponent<StreetPieceProperties>();
+        StreetPieceProperties newStreetPiece = GameObject.Instantiate(Resources.Load<GameObject>(streetPiecePath), spawnCoordinates, Quaternion.identity).GetComponent<StreetPieceProperties>();
         newStreetPiece.GetComponent<StreetPieceProperties>().SPConstructor(Tools.GetNextValue());
 
 
@@ -52,7 +53,7 @@ public class SegmentManager : ScriptableObject
         for (int i = 0; i < numOfCells; ++i)
         {
             // to easily recognize the cells as belonging to a segment, the ID will be built using the ID of the Street Piece + Cell number
-            int newCellID = Int32.Parse($"{newStreetPiece.Id}{i}"); //HACK: check this actually works!
+            int newCellID = Int32.Parse($"{newStreetPiece.Id}{i}"); //HACK: check this actually works! otherwise use string ids
             
             newCells.Add(new CellProperties(newCellID));
         }
@@ -97,5 +98,43 @@ public class SegmentManager : ScriptableObject
         }
 
         segmentStack.Add(seg);
+    }
+
+    // Computes an updated position for the cells // TODO: adatta ad essere usat qua
+    private List<CellProperties> GetUpdatedCellCoordinates(GameObject streetPiece, List<CellProperties> cells, int xCellNumber, float cellSize)
+    {
+        // compute cell coordinates
+        int zIndex = 0;
+        int xIndex = 0;
+        Vector3 cellCoordinatesDelta = new Vector3(0f, 0f, 0f);
+        StreetPieceProperties strtPcProperties = streetPiece.GetComponent<StreetPieceProperties>();
+
+        for (int i = 0; i < cells.Count / 2; i++)
+        {
+            zIndex = i / xCellNumber;
+            xIndex = i - zIndex * xCellNumber;
+
+            cellCoordinatesDelta.x = (2 * xIndex + 1) * cellSize / 2f - strtPcProperties.SidewalkWidth / 2f;
+            cellCoordinatesDelta.y = strtPcProperties.SidewalkHeight;
+            cellCoordinatesDelta.z = strtPcProperties.Length / 2f - (2 * zIndex + 1) * cellSize / 2f;
+
+            // the final cell coordinates
+            cells[i].Coordinates = streetPiece.transform.GetChild(1).position + cellCoordinatesDelta;
+        }
+        for (int i = cells.Count / 2; i < cells.Count; i++)
+        {
+            int ii = i - cells.Count / 2;
+            zIndex = ii / xCellNumber;
+            xIndex = ii - zIndex * xCellNumber;
+
+            cellCoordinatesDelta.x = (2 * xIndex + 1) * cellSize / 2f - strtPcProperties.SidewalkWidth / 2f;
+            cellCoordinatesDelta.y = strtPcProperties.SidewalkHeight;
+            cellCoordinatesDelta.z = strtPcProperties.Length / 2f - (2 * zIndex + 1) * cellSize / 2f;
+
+            // the final cell coordinates
+            cells[i].Coordinates = streetPiece.transform.GetChild(2).position + cellCoordinatesDelta;
+        }
+
+        return cells;
     }
 }

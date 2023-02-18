@@ -16,7 +16,7 @@ public class LevelManager : MonoBehaviour
     [SerializeField]
     private int stackSize = 10;
     public SegmentManager lvl1SegmentManager;
-    private string streetPiecePrefabPath = "StreetPieces/Street";
+    private string streetPiecePrefabPath = "StreetPieces/CityStreet";
     private string obstacleFolderPath = "Obstacles";
     [SerializeField]
     private int segmentBudget = 100;

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using UnityEngine;
 
 
@@ -12,7 +13,8 @@ public class SegmentProperties
     private int xCellNumber;
     private int zCellNumber;
     private float cellSize;
-    public List<CellProperties> Cells { get { return GetUpdatedCellCoordinates(StreetPiece.gameObject, Cells, xCellNumber, cellSize); } private set { Cells = value; } }
+    private List<CellProperties> _Cells;
+    public ReadOnlyCollection<CellProperties> Cells { get { return GetUpdatedCellCoordinates(StreetPiece.gameObject, _Cells, xCellNumber, cellSize).AsReadOnly(); } }
 
     // Constructor
     public SegmentProperties(int budget, StreetPieceProperties strP, List<ObstacleProperties> obs, List<CellProperties> cls, int xCellNum, int zCellNum)
@@ -20,12 +22,12 @@ public class SegmentProperties
         Budget = budget;
         StreetPiece = strP;
         Obstacles = obs;
-        Cells = cls;
+        _Cells = cls;
         xCellNumber = xCellNum;
         zCellNumber= zCellNum;
 
         // checking if we get the same size if computing along the z axis
-        if ((StreetPiece.Length / zCellNumber) == (StreetPiece.Width / xCellNumber))
+        if ((StreetPiece.Length / zCellNumber) == (StreetPiece.SidewalkWidth / xCellNumber))
         {
             cellSize = StreetPiece.Length / zCellNumber;
         } else
