@@ -11,6 +11,7 @@ public class SegmentManager
     private string streetPiecePath;
     private int xNumofCells;
     private int zNumofCells;
+    private float cellSize;
 
     private ItemSpawner obstacleSpawner;
     public int Budget { get; set; }
@@ -57,6 +58,9 @@ public class SegmentManager
             
             newCells.Add(new CellProperties(newCellID));
         }
+        cellSize = GetCellSize(newStreetPiece,xNumofCells,zNumofCells);
+        // update cell position
+        newCells = Tools.GetUpdatedCellCoordinates(newStreetPiece.gameObject, newCells, xNumofCells, cellSize);
 
         // Spawning obstacles
         obstacleSpawner.FillItemList(maxObstacles, totalBudget);
@@ -78,6 +82,25 @@ public class SegmentManager
         nextCoords.z = StackCount == 0 ? 0 : segmentStack[StackCount - 1].StreetPiece.gameObject.transform.position.z + streetLength;
 
         return nextCoords;
+    }
+
+    // Computes cell Size and checks whether they are square
+    private float GetCellSize(StreetPieceProperties sp, int xCellNumber, int zCellNumber)
+    {
+        float cellSize = 0;
+
+        // checking if we get the same size if computing along the z axis
+        if ((sp.Length / zCellNumber) == (sp.SidewalkWidth / xCellNumber))
+        {
+            cellSize = sp.Length / zCellNumber;
+            return cellSize;
+        }
+        else
+        {
+            Debug.LogWarning("WARNING: Ground size doesn't allow for square cells. cells MUST be square!" +
+                $" width: {sp.SidewalkWidth} x length: {sp.Length}, cellsize: {(sp.Length / zCellNumber)} x {(sp.Width / xCellNumber)}");
+            return 0;
+        }
     }
 
     // Inserts new segment into the Stack

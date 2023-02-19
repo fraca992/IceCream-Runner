@@ -14,5 +14,4 @@ public class CellProperties
         Id = id;
         Coordinates = c == null? Vector3.zero : c.Value;
     }
-} 
-
+}
