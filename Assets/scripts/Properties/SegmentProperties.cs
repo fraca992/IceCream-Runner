@@ -5,7 +5,7 @@ using UnityEngine;
 using Common;
 
 
-public class SegmentProperties
+public class SegmentProperties : MonoBehaviour
 {
     public int Budget { get; private set; }
     public StreetPieceProperties StreetPiece { get; private set; }
@@ -18,7 +18,7 @@ public class SegmentProperties
     public ReadOnlyCollection<CellProperties> Cells { get { return Tools.GetUpdatedCellCoordinates(StreetPiece.gameObject, _Cells, xCellNumber, cellSize).AsReadOnly(); } }
 
     // Constructor
-    public SegmentProperties(int budget, StreetPieceProperties strP, List<ObstacleProperties> obs, List<CellProperties> cls, int xCellNum, int zCellNum)
+    public SegmentProperties InitializeStreetPiece(int budget, StreetPieceProperties strP, List<ObstacleProperties> obs, List<CellProperties> cls, int xCellNum, int zCellNum)
     {
         Budget = budget;
         StreetPiece = strP;
@@ -26,5 +26,7 @@ public class SegmentProperties
         _Cells = cls;
         xCellNumber = xCellNum;
         zCellNumber= zCellNum;
+
+        return this;
     }
 }

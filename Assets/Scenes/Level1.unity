@@ -293,7 +293,7 @@ GameObject:
   m_Component:
   - component: {fileID: 330243677}
   m_Layer: 0
-  m_Name: Segment_1
+  m_Name: Segment_0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -537,8 +537,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levelSpeed: 0.2
-  stackSize: 2
-  lvl1SegmentManager: {fileID: 0}
+  stackSize: 10
   segmentBudget: 100
   maxObstacles: 8
   XCellNum: 2

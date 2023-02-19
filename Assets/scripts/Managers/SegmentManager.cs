@@ -41,14 +41,23 @@ public class SegmentManager
     {
         if (totalBudget == 0) totalBudget = Budget;
 
+        // Fetch the Segment GameObject to hold the StreetPiece and Items, if not Instantates it
+        GameObject segmentGO = GameObject.Find($"Segment_{segmentStack.Count}");
+        if (segmentGO == null)
+        {
+            segmentGO = new GameObject($"Segment_{segmentStack.Count}");
+            segmentGO.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
+            segmentGO.transform.SetParent(GameObject.Find("Street").transform);
+        }
 
-        // Spawning ground
+
+        // Instantiating ground
         Vector3 spawnCoordinates = GetNextStreetPieceCoordinates();
-        StreetPieceProperties newStreetPiece = GameObject.Instantiate(Resources.Load<GameObject>(streetPiecePath), spawnCoordinates, Quaternion.identity).GetComponent<StreetPieceProperties>();
+        StreetPieceProperties newStreetPiece = GameObject.Instantiate(Resources.Load<GameObject>(streetPiecePath), spawnCoordinates, Quaternion.identity, segmentGO.transform).GetComponent<StreetPieceProperties>();
         newStreetPiece.GetComponent<StreetPieceProperties>().SPConstructor(Tools.GetNextValue());
 
 
-        // instantiating cells in Cell Array with starting points
+        // creating cells in Cell Array with starting points
         List<CellProperties> newCells = new List<CellProperties>();
         int numOfCells = 2 * (xNumofCells * zNumofCells);
         for (int i = 0; i < numOfCells; ++i)
@@ -59,15 +68,16 @@ public class SegmentManager
             newCells.Add(new CellProperties(newCellID));
         }
         cellSize = GetCellSize(newStreetPiece,xNumofCells,zNumofCells);
-        // update cell position
         newCells = Tools.GetUpdatedCellCoordinates(newStreetPiece.gameObject, newCells, xNumofCells, cellSize);
 
-        // Spawning obstacles
+        // Instantiating obstacles
         obstacleSpawner.FillItemList(maxObstacles, totalBudget);
-        List<ObstacleProperties> newObstacles = obstacleSpawner.PlaceObstacles(newCells);
+        List<ObstacleProperties> newObstacles = obstacleSpawner.PlaceObstacles(newCells, segmentGO.transform);
 
-        // creating the new Segment
-        SegmentProperties newSegment = new SegmentProperties(Budget, newStreetPiece, newObstacles, newCells, xNumofCells, zNumofCells);
+        // Adding a new SegmentProperties script to the Segment_x GameObject, initializing it then adding it to the SegmentStack
+        SegmentProperties newSegment;
+        segmentGO.AddComponent<SegmentProperties>();
+        newSegment = segmentGO.GetComponent<SegmentProperties>().InitializeStreetPiece(Budget, newStreetPiece, newObstacles, newCells, xNumofCells, zNumofCells);
         InsertSegmentIntoStack(newSegment);
 
         return;

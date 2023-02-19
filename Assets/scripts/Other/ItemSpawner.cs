@@ -54,7 +54,7 @@ public class ItemSpawner
     }
 
     // this function places all the selected Items on the Ground segment
-    public List<ObstacleProperties> PlaceObstacles(List<CellProperties> cells)
+    public List<ObstacleProperties> PlaceObstacles(List<CellProperties> cells, Transform segmentT)
     {
         spawnedObstacles.Clear();
 
@@ -74,7 +74,7 @@ public class ItemSpawner
             // TODO: Must eventually account for different size/shape of items
             if (cl.isOccupied == false)
             {
-                spawnedObstacles.Add(GameObject.Instantiate(itm, cl.Coordinates, Quaternion.identity).GetComponent<ObstacleProperties>());
+                spawnedObstacles.Add(GameObject.Instantiate(itm, cl.Coordinates, Quaternion.identity, segmentT).GetComponent<ObstacleProperties>());
                 cl.isOccupied = true;
                 selectedItems.RemoveAt(rndItemIndex);
             }
