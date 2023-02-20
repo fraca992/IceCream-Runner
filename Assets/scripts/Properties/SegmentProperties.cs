@@ -7,6 +7,7 @@ using Common;
 
 public class SegmentProperties : MonoBehaviour
 {
+    public int SegmentId { get; private set; }
     public int Budget { get; private set; }
     public StreetPieceProperties StreetPiece { get; private set; }
     public List<ObstacleProperties> Obstacles { get; private set; }

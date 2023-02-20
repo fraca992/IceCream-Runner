@@ -40,21 +40,21 @@ public class SegmentManager
     public void SpawnSegment(int totalBudget = 0)
     {
         if (totalBudget == 0) totalBudget = Budget;
+        int newId = Tools.GetNextValue();
 
         // Fetch the Segment GameObject to hold the StreetPiece and Items, if not Instantates it
-        GameObject segmentGO = GameObject.Find($"Segment_{segmentStack.Count}");
-        if (segmentGO == null)
+        GameObject newSegmentGO = GameObject.Find($"Segment_{newId}");
+        if (newSegmentGO == null)
         {
-            segmentGO = new GameObject($"Segment_{segmentStack.Count}");
-            segmentGO.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
-            segmentGO.transform.SetParent(GameObject.Find("Street").transform);
+            newSegmentGO = new GameObject($"Segment_{newId}");
+            newSegmentGO.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
+            newSegmentGO.transform.SetParent(GameObject.Find("Street").transform);
         }
-
 
         // Instantiating ground
         Vector3 spawnCoordinates = GetNextStreetPieceCoordinates();
-        StreetPieceProperties newStreetPiece = GameObject.Instantiate(Resources.Load<GameObject>(streetPiecePath), spawnCoordinates, Quaternion.identity, segmentGO.transform).GetComponent<StreetPieceProperties>();
-        newStreetPiece.GetComponent<StreetPieceProperties>().SPConstructor(Tools.GetNextValue());
+        StreetPieceProperties newStreetPiece = GameObject.Instantiate(Resources.Load<GameObject>(streetPiecePath), spawnCoordinates, Quaternion.identity, newSegmentGO.transform).GetComponent<StreetPieceProperties>();
+        newStreetPiece.GetComponent<StreetPieceProperties>().SPConstructor(newId);
 
 
         // creating cells in Cell Array with starting points
@@ -63,7 +63,7 @@ public class SegmentManager
         for (int i = 0; i < numOfCells; ++i)
         {
             // to easily recognize the cells as belonging to a segment, the ID will be built using the ID of the Street Piece + Cell number
-            int newCellID = Int32.Parse($"{newStreetPiece.Id}{i}"); //HACK: check this actually works! otherwise use string ids
+            int newCellID = Int32.Parse($"{newId}{i}"); //HACK: check this actually works! otherwise use string ids
             
             newCells.Add(new CellProperties(newCellID));
         }
@@ -72,12 +72,12 @@ public class SegmentManager
 
         // Instantiating obstacles
         obstacleSpawner.FillItemList(maxObstacles, totalBudget);
-        List<ObstacleProperties> newObstacles = obstacleSpawner.PlaceObstacles(newCells, segmentGO.transform);
+        List<ObstacleProperties> newObstacles = obstacleSpawner.PlaceObstacles(newCells, newSegmentGO.transform);
 
         // Adding a new SegmentProperties script to the Segment_x GameObject, initializing it then adding it to the SegmentStack
         SegmentProperties newSegment;
-        segmentGO.AddComponent<SegmentProperties>();
-        newSegment = segmentGO.GetComponent<SegmentProperties>().InitializeStreetPiece(Budget, newStreetPiece, newObstacles, newCells, xNumofCells, zNumofCells);
+        newSegmentGO.AddComponent<SegmentProperties>();
+        newSegment = newSegmentGO.GetComponent<SegmentProperties>().InitializeStreetPiece(Budget, newStreetPiece, newObstacles, newCells, xNumofCells, zNumofCells);
         InsertSegmentIntoStack(newSegment);
 
         return;
@@ -125,6 +125,7 @@ public class SegmentManager
             }
 
             GameObject.Destroy(segmentStack[0].StreetPiece.gameObject);
+            GameObject.Destroy(segmentStack[0].gameObject);
 
             segmentStack.RemoveAt(0);
         }
